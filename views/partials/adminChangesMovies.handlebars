@@ -31,7 +31,7 @@
         <h3>Eliminar una película</h3>
     </div>
     <div class="mb-3 form-group">
-        <select id="adminChangesMoviesListID">
+        <select class="form-select" id="adminChangesMoviesListID">
             {{#each movies}}
                 <option>({{this.ID_Movie}}) {{this.movie_name}} - {{this.director}}</option>
             {{/each}}

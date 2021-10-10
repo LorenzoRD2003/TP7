@@ -15,6 +15,7 @@ const exphbs  = require('express-handlebars'); //Para el manejo de los HTML
 const bodyParser = require('body-parser'); //Para el manejo de los strings JSON
 const MySQL = require('./modulos/mysql'); //Añado el archivo mysql.js presente en la carpeta módulos
 const nodeFunctions = require('./modulos/nodeFunctions');
+const session = require('express-session');
 
 const app = express(); //Inicializo express para el manejo de las peticiones
 
@@ -22,6 +23,7 @@ app.use(express.static('public')); //Expongo al lado cliente la carpeta "public"
 
 app.use(bodyParser.urlencoded({ extended: false })); //Inicializo el parser JSON
 app.use(bodyParser.json());
+app.use(session({secret: 'erwltkjqwqmnsdflkjnqweradsfjklbnewdsfwrgfsfgvaxcvjbasdkfbawehf', resave: true, saveUninitialized: true}));
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'})); //Inicializo Handlebars. Utilizo como base el layout "Main".
 app.set('view engine', 'handlebars'); //Inicializo Handlebars
@@ -67,6 +69,7 @@ app.post('/loginIntoSystem', async (req, res) => {
         const { user, success } = await nodeFunctions.loginIntoSystem(req.body.email, req.body.password);
         switch(success) {
             case "access":
+                req.session.user = user; // Variable de sesion
                 res.render('home', user);
                 break;
             case "wrong-password":
@@ -82,13 +85,13 @@ app.post('/loginIntoSystem', async (req, res) => {
     }
 });
 
+// Elegir sección para hacer cambios de tablas
 app.get('/adminChangesSelector', async (req, res) => {
     // En cada caso, primero hago llamada a la base de datos para los datos que necesite.
     try {
         switch(req.query.adminChangesSelectorName) {
             case "Cinemas":
                 const cinemas = await nodeFunctions.selectAll("Cinemas");
-                console.log(cinemas);
                 res.render('homeAdmin', { cinemas: cinemas });
                 break;
             case "Movies":
@@ -106,6 +109,7 @@ app.get('/adminChangesSelector', async (req, res) => {
     }
 });
 
+// Actualizar select (de HTML) de cines 
 app.get('/updateCinemasList', async (req, res) => {
     try {
         const cinemasList = await nodeFunctions.selectAll("Cinemas");
@@ -116,6 +120,7 @@ app.get('/updateCinemasList', async (req, res) => {
     }
 });
 
+// Agregar un cine
 app.post('/addNewCinema', async (req, res) => {
     try {
         await nodeFunctions.insertCinema(req.body.name, req.body.address, req.body.city, req.body.dim1, req.body.dim2);
@@ -126,6 +131,7 @@ app.post('/addNewCinema', async (req, res) => {
     }
 })
 
+// Borrar un cine
 app.delete('/deleteCinema', async (req, res) => {
     try {
         await nodeFunctions.deleteCinema(req.body.ID_Cinema);
@@ -136,7 +142,7 @@ app.delete('/deleteCinema', async (req, res) => {
     }
 });
 
-
+// Actualizar select (de HTML) de peliculas
 app.get('/updateMoviesList', async (req, res) => {
     try {
         const moviesList = await nodeFunctions.selectAll("Movies");
@@ -147,6 +153,7 @@ app.get('/updateMoviesList', async (req, res) => {
     }
 });
 
+// Agregar una pelicula
 app.post('/addNewMovie', async (req, res) => {
     try {
         await nodeFunctions.insertMovie(req.body.name, req.body.duration, req.body.director, req.body.language);
@@ -157,6 +164,7 @@ app.post('/addNewMovie', async (req, res) => {
     }
 })
 
+// Borrar una pelicula
 app.delete('/deleteMovie', async (req, res) => {
     try {
         await nodeFunctions.deleteMovie(req.body.ID_Movie);
@@ -166,3 +174,5 @@ app.delete('/deleteMovie', async (req, res) => {
         res.send({ success: "error" });
     }
 });
+
+

@@ -38,7 +38,7 @@
         <h3>Eliminar un cine</h3>
     </div>
     <div class="mb-3 form-group">
-        <select id="adminChangesCinemasListID">
+        <select class="form-select" id="adminChangesCinemasListID">
             {{#each cinemas}}
                 <option>({{this.ID_Cinema}}) {{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
             {{/each}}
