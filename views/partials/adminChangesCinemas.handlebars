@@ -1,0 +1,50 @@
+<div class="mt-5 mb-3 container-sm">
+        <h2>Zona de modificaciones de cines.</h2>
+    </div>
+<div class="container-sm bg-light mb-3 p-3 border">
+    <div class="mb-3 form-group">
+        <h3>Agregar un cine</h3>
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesCinemasNameID" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="adminChangesCinemasNameID" value="" placeholder="Nombre">
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesCinemasAddressID" class="form-label">Dirección</label>
+        <input type="text" class="form-control" id="adminChangesCinemasAddressID" value="" placeholder="Dirección">
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesCinemasCityID" class="form-label">Ciudad</label>
+        <input type="text" class="form-control" id="adminChangesCinemasCityID" value="" placeholder="Ciudad">
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesCinemasHorizontalDimensionID" class="form-label">Dimensiones de la sala (número de asientos)</label>
+        <div class="row">
+            <div class="col-sm-3">
+                <input type="number" class="form-control" id="adminChangesCinemasHorizontalDimensionID" value="" placeholder="Dimensión horizontal">
+            </div>
+            <div class="col-sm-3">
+                <input type="number" class="form-control" id="adminChangesCinemasVerticalDimensionID" value="" placeholder="Dimensión vertical">
+            </div>
+        </div>
+    </div>
+    <div class="mb-3 form-check">
+        <button type="button" class="btn btn-danger" onclick="addNewCinema()">Ingresar cine</button>
+    </div>
+</div>
+
+<div class="container-sm bg-light mb-3 p-3 border">
+    <div class="mb-3 form-group">
+        <h3>Eliminar un cine</h3>
+    </div>
+    <div class="mb-3 form-group">
+        <select id="adminChangesCinemasListID">
+            {{#each cinemas}}
+                <option>({{this.ID_Cinema}}) {{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="mb-3 form-check">
+        <button type="button" class="btn btn-danger" onclick="deleteCinema()">Eliminar cine</button>
+    </div>
+</div>

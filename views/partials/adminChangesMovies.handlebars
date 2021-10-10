@@ -1,0 +1,43 @@
+<div class="mt-5 mb-3 container-sm">
+        <h2>Zona de modificaciones de películas.</h2>
+    </div>
+<div class="container-sm bg-light mb-3 p-3 border">
+    <div class="mb-3 form-group">
+        <h3>Agregar una película</h3>
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesMoviesNameID" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="adminChangesMoviesNameID" value="" placeholder="Nombre">
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesMoviesDurationID" class="form-label">Duración</label>
+        <input type="number" class="form-control" id="adminChangesMoviesDurationID" value="" placeholder="Duración">
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesMoviesDirectorID" class="form-label">Director</label>
+        <input type="text" class="form-control" id="adminChangesMoviesDirectorID" value="" placeholder="Director">
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesMoviesLanguageID" class="form-label">Idioma</label>
+        <input type="text" class="form-control" id="adminChangesMoviesLanguageID" value="" placeholder="Idioma">
+    </div>
+    <div class="mb-3 form-check">
+        <button type="button" class="btn btn-danger" onclick="addNewMovie()">Ingresar película</button>
+    </div>
+</div>
+
+<div class="container-sm bg-light mb-3 p-3 border">
+    <div class="mb-3 form-group">
+        <h3>Eliminar una película</h3>
+    </div>
+    <div class="mb-3 form-group">
+        <select id="adminChangesMoviesListID">
+            {{#each movies}}
+                <option>({{this.ID_Movie}}) {{this.movie_name}} - {{this.director}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="mb-3 form-check">
+        <button type="button" class="btn btn-danger" onclick="deleteMovie()">Eliminar película</button>
+    </div>
+</div>

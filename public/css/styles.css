@@ -1,0 +1,15 @@
+.header {
+    width: 100%;
+    height: auto;
+    padding: 1em;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+.footer {
+    width: 100%;
+    height: auto;
+    background-color: gray;
+    text-align: center;
+}

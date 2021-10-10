@@ -1,0 +1,29 @@
+<form action="/loginIntoSystem" method="POST" class="container-sm">
+    <div class="mb-3 form-group">
+        <h2>Ingresar al sistema</h2>
+    </div>
+    {{#if error}}
+        <div class="mb-3 form-group">
+            <h3>{{error}}</h3>
+        </div>
+    {{/if}}
+    <div class="mb-3 form-group">
+        <label for="loginEmailID" class="form-label">Usuario (email)</label>
+        <input type="text" class="form-control" id="loginEmailID" name="email" value="" placeholder="Email de usuario">
+    </div>
+    <div class="mb-3 form-group">
+        <label for="loginPasswordID" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="loginPasswordID" name="password" placeholder="Contraseña">
+    </div>
+    <div class="mb-3 form-check">
+        <input type="submit" class="btn btn-primary" value="Ingresar">
+    </div>
+</form>
+
+<form action="/gotoCreateAccount" method="GET" class="container-sm">
+    <div class="mb-3 form-check">
+        <input type="submit" class="btn btn-secondary" value="Crear Cuenta">
+    </div>
+</form>
+
+

@@ -1,0 +1,40 @@
+<div class="container-sm">
+    <div class="mb-3 form-group">
+        <h2>Bienvenido, administrador del sistema.</h2>
+    </div>
+    <div class="container-sm bg-light mb-3 p-3 border">
+        <div class="mb-3 form-group">
+            <h3>Seleccione la opción que quiere utilizar.</h3>
+        </div>
+        {{#if error}}
+            <div class="mb-3 form-group">
+                <h3>{{error}}</h3>
+            </div>
+        {{/if}}
+        <div class="mb-3 mt-5 form-group">
+            <form action="/adminChangesSelector" method="GET" id="adminChangesSelectorID">
+                <div class="row text-center">
+                    <div class="col-sm-4 mx-auto">
+                        <button type="submit" class="btn btn-success btn-lg" name="adminChangesSelectorName" value="Cinemas">Modificar cines</button>
+                    </div>
+                    <div class="col-sm-4 mx-auto">
+                        <button type="submit" class="btn btn-success btn-lg" name="adminChangesSelectorName" value="Movies">Modificar películas</button>
+                    </div>
+                    <div class="col-sm-4 mx-auto">
+                        <button type="submit" class="btn btn-success btn-lg" name="adminChangesSelectorName" value="Times">Modificar horarios</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{#if cinemas}}
+    {{> adminChangesCinemas this}}
+{{/if}}
+{{#if movies}}
+    {{> adminChangesMovies this}}
+{{/if}}
+{{#if times}}
+    {{> adminChangesTimes this}}
+{{/if}}
