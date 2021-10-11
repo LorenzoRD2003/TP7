@@ -1,0 +1,47 @@
+<div class="mt-5 mb-3 container-sm">
+        <h2>Zona de modificaciones de horarios de películas.</h2>
+    </div>
+<div class="container-sm bg-light mb-3 p-3 border">
+    <div class="mb-3 form-group">
+        <h3>Agregar una opción</h3>
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesChoicesCinemasList" class="form-label">Cine</label>
+        <select class="form-select" id="adminChangesChoicesCinemasList">
+            {{#each cinemas}}
+                <option>({{this.ID_Cinema}}) {{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesChoicesNoviesList" class="form-label">Película</label>
+        <select class="form-select" id="adminChangesChoicesMoviesList">
+            {{#each movies}}
+                <option>({{this.ID_Movie}}) {{this.movie_name}} - {{this.director}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="mb-3 form-group">
+        <label for="adminChangesChoicesSchedule" class="form-label">Horario</label>
+        <input type="time" class="form-control" id="adminChangesChoicesSchedule" value="" placeholder="Horario">
+    </div>
+    <div class="mb-3 form-check">
+        <button type="button" class="btn btn-danger" onclick="addNewChoice()">Ingresar opción</button>
+    </div>
+</div>
+
+<div class="container-sm bg-light mb-3 p-3 border">
+    <div class="mb-3 form-group">
+        <h3>Eliminar una opción</h3>
+    </div>
+    <div class="mb-3 form-group">
+        <select class="form-select" id="adminChangesMoviesListID">
+            {{#each choices}}
+                <option>({{this.ID_Choice}})</option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="mb-3 form-check">
+        <button type="button" class="btn btn-danger" onclick="deleteChoice()">Eliminar opción</button>
+    </div>
+</div>

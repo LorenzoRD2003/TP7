@@ -77,6 +77,14 @@ exports.deleteMovie = async (ID_Movie) => {
     */
 }
 
+exports.selectAllChoices = async () => {
+    return await MySQL.realizarQuery(`
+        select Cinemas.cinema_name, Movies.movie_name from Choices
+        join Cinemas on (Cinemas.ID_Cinema = Choices.ID_Cinema)
+        join Movies on (Movies.ID_Movie = Choices.ID_Movie`
+    );
+}
+
 exports.insertChoice = async () => {
     const emptyMatrixOfSeats = JSON.stringify(createEmptyMatrixOfSeats(dim1, dim2));
     await MySQL.realizarQuery(`insert into Choices ()

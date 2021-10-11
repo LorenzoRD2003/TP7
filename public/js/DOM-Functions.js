@@ -66,16 +66,43 @@ const createAccount = () => {
     }
 }
 
+
 // Actualizar lista de cines
-const updateCinemasList = () => {
+const updateCinemasList = (cinemasList) => {
     const selectCinemasList = document.getElementById("adminChangesCinemasListID");
     ajax("GET", "/updateCinemasList", null, (res) => {
         if (res) {
             res = JSON.parse(res);
-            selectCinemasList.innerHTML = "";
-            res.cinemasList.forEach(cinema => selectCinemasList.innerHTML += `<option>(${cinema.ID_Cinema}) ${cinema.cinema_name} - ${cinema.address} - ${cinema.city}</option>`);
+            cinemasList.innerHTML = "";
+            res.cinemasList.forEach(cinema => cinemasList.innerHTML += `<option>(${cinema.ID_Cinema}) ${cinema.cinema_name} - ${cinema.address} - ${cinema.city}</option>`);
         } else {
             createErrorModal("errorUpdateCinemasListModal", "Hubo un error al intentar actualizar la lista de cines.");
+        }
+    });
+}
+
+// Actualizar lista de películas
+const updateMoviesList = (moviesList) => {
+    ajax("GET", "/updateMoviesList", null, (res) => {
+        if (res) {
+            res = JSON.parse(res);
+            moviesList.innerHTML = "";
+            res.moviesList.forEach(movie => moviesList.innerHTML += `<option>(${movie.ID_Movie}) ${movie.movie_name} - ${movie.director}</option>`);
+        } else {
+            createErrorModal("errorUpdateMoviesListModal", "Hubo un error al intentar actualizar la lista de películas.");
+        }
+    });
+}
+
+// Actualizar lista de opciones
+const updateChoicesList = (choicesList) => {
+    ajax("GET", "/updateChoicesList", null, (res) => {
+        if (res) {
+            res = JSON.parse(res);
+            choicesList.innerHTML = "";
+            res.choicesList.forEach(movie => choicesList.innerHTML += `<option>(${choice.ID_Choice}) ${choice.cinema_name} - ${choice.movie_name}</option>`);
+        } else {
+            createErrorModal("errorUpdateMoviesListModal", "Hubo un error al intentar actualizar la lista de películas.");
         }
     });
 }
@@ -126,19 +153,7 @@ const deleteCinema = () => {
 
 
 
-// Actualizar lista de películas
-const updateMoviesList = () => {
-    const selectMoviesList = document.getElementById("adminChangesMoviesListID");
-    ajax("GET", "/updateMoviesList", null, (res) => {
-        if (res) {
-            res = JSON.parse(res);
-            selectMoviesList.innerHTML = "";
-            res.moviesList.forEach(movie => selectMoviesList.innerHTML += `<option>(${movie.ID_Movie}) ${movie.movie_name} - ${movie.director}</option>`);
-        } else {
-            createErrorModal("errorUpdateMoviesListModal", "Hubo un error al intentar actualizar la lista de películas.");
-        }
-    });
-}
+
 
 // Agregar una nueva película
 const addNewMovie = () => {

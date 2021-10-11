@@ -21,7 +21,7 @@
                         <button type="submit" class="btn btn-success btn-lg" name="adminChangesSelectorName" value="Movies">Modificar películas</button>
                     </div>
                     <div class="col-sm-4 mx-auto">
-                        <button type="submit" class="btn btn-success btn-lg" name="adminChangesSelectorName" value="Times">Modificar horarios</button>
+                        <button type="submit" class="btn btn-success btn-lg" name="adminChangesSelectorName" value="Choices">Modificar horarios</button>
                     </div>
                 </div>
             </form>
@@ -29,12 +29,3 @@
     </div>
 </div>
 
-{{#if cinemas}}
-    {{> adminChangesCinemas this}}
-{{/if}}
-{{#if movies}}
-    {{> adminChangesMovies this}}
-{{/if}}
-{{#if times}}
-    {{> adminChangesTimes this}}
-{{/if}}

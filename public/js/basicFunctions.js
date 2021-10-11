@@ -48,3 +48,4 @@ const fullUserValidation = (name, surname, dni, email, password) => {
     }
     return true;
 };
+

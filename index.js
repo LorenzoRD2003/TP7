@@ -13,9 +13,9 @@
 const express = require('express'); //Para el manejo del servidor Web
 const exphbs  = require('express-handlebars'); //Para el manejo de los HTML
 const bodyParser = require('body-parser'); //Para el manejo de los strings JSON
-const MySQL = require('./modulos/mysql'); //Añado el archivo mysql.js presente en la carpeta módulos
 const nodeFunctions = require('./modulos/nodeFunctions');
 const session = require('express-session');
+
 
 const app = express(); //Inicializo express para el manejo de las peticiones
 
@@ -92,15 +92,20 @@ app.get('/adminChangesSelector', async (req, res) => {
         switch(req.query.adminChangesSelectorName) {
             case "Cinemas":
                 const cinemas = await nodeFunctions.selectAll("Cinemas");
-                res.render('homeAdmin', { cinemas: cinemas });
+                res.render('adminChangesCinemas', { cinemas: cinemas });
                 break;
             case "Movies":
                 const movies = await nodeFunctions.selectAll("Movies");
-                res.render('homeAdmin', { movies: movies });
+                res.render('adminChangesMovies', { movies: movies });
                 break;
-            case "Times":
-                const times = await nodeFunctions.selectAll("Times");
-                res.render('homeAdmin', { times: times });
+            case "Choices":
+                const object = {
+                    cinemas: await nodeFunctions.selectAll("Cinemas"),
+                    movies: await nodeFunctions.selectAll("Movies"),
+                    choices: await nodeFunctions.selectAllChoices()
+                }
+                console.log(object.choices);
+                res.render('adminChangesChoices', object);
                 break;
         }
     } catch (err) {
