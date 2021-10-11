@@ -71,9 +71,14 @@ const createAccount = () => {
 const updateCinemasList = (cinemasList) => {
     ajax("GET", "/updateCinemasList", null, (res) => {
         if (res) {
-            res = JSON.parse(res);
-            cinemasList.innerHTML = "";
-            res.cinemasList.forEach(cinema => cinemasList.innerHTML += `<option>(${cinema.ID_Cinema}) ${cinema.cinema_name} - ${cinema.address} - ${cinema.city}</option>`);
+            res = JSON.parse(res); 
+            cinemasList.innerHTML = "<option disabled selected>Seleccione un cine</option>";
+            res.cinemasList.forEach(cinema => {
+                let option = document.createElement("option");
+                option.text = `${cinema.cinema_name} - ${cinema.address} - ${cinema.city}`;
+                option.setAttribute("data-cinema-id", cinema.ID_Cinema);
+                cinemasList.appendChild(option);
+            });
         } else {
             createErrorModal("errorUpdateCinemasListModal", "Hubo un error al intentar actualizar la lista de cines.");
         }
@@ -85,8 +90,13 @@ const updateMoviesList = (moviesList) => {
     ajax("GET", "/updateMoviesList", null, (res) => {
         if (res) {
             res = JSON.parse(res);
-            moviesList.innerHTML = "";
-            res.moviesList.forEach(movie => moviesList.innerHTML += `<option>(${movie.ID_Movie}) ${movie.movie_name} - ${movie.director}</option>`);
+            moviesList.innerHTML = "<option disabled selected>Seleccione una película</option>";
+            res.moviesList.forEach(movie => {
+                let option = document.createElement("option");
+                option.text = `${movie.movie_name} - ${movie.director}`;
+                option.setAttribute('data-movie-id', movie.ID_Movie);
+                moviesList.appendChild(option);
+            });
         } else {
             createErrorModal("errorUpdateMoviesListModal", "Hubo un error al intentar actualizar la lista de películas.");
         }
@@ -98,8 +108,13 @@ const updateChoicesList = (choicesList) => {
     ajax("GET", "/updateChoicesList", null, (res) => {
         if (res) {
             res = JSON.parse(res);
-            choicesList.innerHTML = "";
-            res.choicesList.forEach(choice => choicesList.innerHTML += `<option>(${choice.ID_Choice}) ${choice.cinema_name} - ${choice.movie_name} - ${choice.movie_schedule}</option>`);
+            choicesList.innerHTML = "<option disabled selected>Seleccione una opción de reserva</option>";
+            res.choicesList.forEach(choice => {
+                let option = document.createElement("option");
+                option.text = `${choice.cinema_name} - ${choice.movie_name} - ${choice.movie_schedule}`;
+                option.setAttribute('data-choice-id', choice.ID_Choice);
+                choicesList.appendChild(option);
+            });
         } else {
             createErrorModal("errorUpdateMoviesListModal", "Hubo un error al intentar actualizar la lista de opciones de reservas.");
         }
@@ -120,8 +135,6 @@ const addNewCinema = () => {
         res = JSON.parse(res);
         switch(res.success) {
             case "successful":
-                const selectCinemasList = document.getElementById("adminChangesCinemasListID");
-                updateCinemasList(selectCinemasList);
                 createSuccessModal("addNewCinemaModal", "El cine fue creado satisfactoriamente.");
                 break;
             case "error":
@@ -157,9 +170,12 @@ const addNewMovie = () => {
 
 // Borrar una película
 const deleteMovie = () => {
+    const moviesList = document.getElementById("adminChangesMoviesListID");
+    const movieIndex = moviesList.selectedIndex;
     const movieToDelete = {
-        ID_Movie: obtainNumberOfID("adminChangesMoviesListID")
+        ID_Movie: moviesList[movieIndex].dataset.movieId
     }
+
     ajax("DELETE", "/deleteMovie", movieToDelete, (res) => {
         res = JSON.parse(res);
         switch(res.success) {
@@ -177,9 +193,15 @@ const deleteMovie = () => {
 
 // Agregar nueva opción de reserva
 const addNewChoice = () => {
+    const cinemasList = document.getElementById("adminChangesChoicesCinemasListID");
+    const cinemaIndex = cinemasList.selectedIndex;
+
+    const moviesList = document.getElementById("adminChangesChoicesMoviesListID");
+    const movieIndex = moviesList.selectedIndex;
+
     const newChoice = {
-        ID_Cinema: obtainNumberOfID("adminChangesChoicesCinemasListID"),
-        ID_Movie: obtainNumberOfID("adminChangesChoicesMoviesListID"),
+        ID_Cinema: cinemasList[cinemaIndex].dataset.cinemaId,
+        ID_Movie: moviesList[movieIndex].dataset.movieId,
         movie_schedule: getValueByID("adminChangesChoicesScheduleID")
     };
 
@@ -200,9 +222,12 @@ const addNewChoice = () => {
 
 // Borrar una opcion de reserva
 const deleteChoice = () => {
+    const choicesList = document.getElementById("adminChangesChoicesListID");
+    const choiceIndex = choicesList.selectedIndex;
     const choiceToDelete = {
-        ID_Choice: obtainNumberOfID("adminChangesChoicesListID")
+        ID_Choice: choicesList[choiceIndex].dataset.choiceId
     }
+    
     ajax("DELETE", "/deleteChoice", choiceToDelete, (res) => {
         res = JSON.parse(res);
         switch(res.success) {
@@ -221,8 +246,10 @@ const deleteChoice = () => {
 
 // Actualizar lista de peliculas por cine en la pantalla de selección
 const getMoviesForThisCinema = () => {
+    const cinemasList = document.getElementById("selectCinemaAndMovieCinemasListID");
+    const cinemaIndex = cinemasList.selectedIndex;
     const cinemaChosen = {
-        ID_Cinema: obtainNumberOfID("selectCinemaAndMovieCinemasListID")
+        ID_Cinema: cinemasList[cinemaIndex].dataset.cinemaId
     }
     
     const moviesList = document.getElementById("selectCinemaAndMovieMoviesListID");
@@ -237,7 +264,12 @@ const getMoviesForThisCinema = () => {
         if (res) {
             res = JSON.parse(res);
             if (res.moviesList.length) {
-                res.moviesList.forEach(movie => moviesList.innerHTML += `<option>(${movie.ID_Movie}) ${movie.movie_name} - ${movie.director}</option>`);
+                res.moviesList.forEach(movie => {
+                    let option = document.createElement("option");
+                    option.text = `${movie.movie_name} - ${movie.director}`;
+                    option.setAttribute('data-movie-id', movie.ID_Movie);
+                    moviesList.appendChild(option);
+                });
                 moviesList.disabled = false;
             } else {
                 moviesList.disabled = true;
@@ -251,9 +283,15 @@ const getMoviesForThisCinema = () => {
 
 // Actualizar lista de horarios en la pantalla de selección
 const getSchedule = () => {
+    const cinemasList = document.getElementById("selectCinemaAndMovieCinemasListID");
+    const cinemaIndex = cinemasList.selectedIndex;
+
+    const moviesList = document.getElementById("selectCinemaAndMovieMoviesListID");
+    const movieIndex = moviesList.selectedIndex;
+
     const object = {
-        ID_Cinema: obtainNumberOfID("selectCinemaAndMovieCinemasListID"),
-        ID_Movie: obtainNumberOfID("selectCinemaAndMovieMoviesListID")
+        ID_Cinema: cinemasList[cinemaIndex].dataset.cinemaId,
+        ID_Movie: moviesList[movieIndex].dataset.movieId
     }
 
     const schedulesList = document.getElementById("selectCinemaAndMovieScheduleID");

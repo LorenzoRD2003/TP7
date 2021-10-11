@@ -11,7 +11,7 @@
         <select class="form-select" id="selectCinemaAndMovieCinemasListID" onchange="getMoviesForThisCinema()">
             <option disabled selected>Seleccione un cine</option>
             {{#each cinemas}}
-                <option>({{this.ID_Cinema}}) {{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
+                <option data-cinema-id="{{this.ID_Cinema}}">{{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
             {{/each}}
         </select>
     </div>
@@ -19,14 +19,14 @@
         <label for="selectCinemaAndMovieMoviesListID" class="form-label">Película</label>
         <select class="form-select" id="selectCinemaAndMovieMoviesListID" onchange="getSchedule()" disabled>
             <option disabled selected>Seleccione una película</option>
-            <!-- Acá se van a introducir en cuanto elijamos un cine -->
+            <!-- Acá se van a introducir las películas en cuanto elijamos un cine -->
         </select>
     </div>
     <div class="mb-3 form-group">
         <label for="selectCinemaAndMovieScheduleID" class="form-label">Horario</label>
         <select class="form-select" id="selectCinemaAndMovieScheduleID" onchange="enableButton('selectCinemaAndMovieContinueButtonID')" disabled>
             <option disabled selected>Seleccione un horario</option>
-            <!-- Acá se van a introducir en cuanto elijamos una pelicula -->
+            <!-- Acá se van a introducir los horarios en cuanto elijamos una película -->
         </select>
     </div>
     <div class="mb-3 form-check">

@@ -101,18 +101,18 @@ app.get('/adminChangesSelector', async (req, res) => {
     try {
         switch(req.query.adminChangesSelectorName) {
             case "Cinemas":
-                const cinemas = await nodeFunctions.selectAll("Cinemas");
+                const cinemas = await nodeFunctions.selectAllCinemas();
                 res.render('adminChangesCinemas', { user: req.session.user, cinemas: cinemas });
                 break;
             case "Movies":
-                const movies = await nodeFunctions.selectAll("Movies");
+                const movies = await nodeFunctions.selectAllMovies();
                 res.render('adminChangesMovies', { user: req.session.user, movies: movies });
                 break;
             case "Choices":
                 const object = {
                     user: req.session.user,
-                    cinemas: await nodeFunctions.selectAll("Cinemas"),
-                    movies: await nodeFunctions.selectAll("Movies"),
+                    cinemas: await nodeFunctions.selectAllCinemas(),
+                    movies: await nodeFunctions.selectAllMovies(),
                     choices: await nodeFunctions.selectAllChoices()
                 }
                 res.render('adminChangesChoices', object);
@@ -129,7 +129,7 @@ app.post('/returnAdminChangesZone', (req, res) => res.render('homeAdmin', { user
 // Actualizar select (de HTML) de cines 
 app.get('/updateCinemasList', async (req, res) => {
     try {
-        const cinemasList = await nodeFunctions.selectAll("Cinemas");
+        const cinemasList = await nodeFunctions.selectAllCinemas();
         res.send({ cinemasList: cinemasList });
     } catch (err) {
         console.log(err);
@@ -162,7 +162,7 @@ app.delete('/deleteCinema', async (req, res) => {
 // Actualizar select (de HTML) de peliculas
 app.get('/updateMoviesList', async (req, res) => {
     try {
-        const moviesList = await nodeFunctions.selectAll("Movies");
+        const moviesList = await nodeFunctions.selectAllMovies();
         res.send({ moviesList: moviesList });
     } catch (err) {
         console.log(err);
@@ -232,7 +232,7 @@ app.post('/userSelectNextOption', async (req, res) => {
     try {
         switch(req.body.userSelectNextOptionName) {
             case "makeBooking":
-                const cinemas = await nodeFunctions.selectAll("Cinemas");
+                const cinemas = await nodeFunctions.selectAllCinemas();
                 res.render('selectCinemaAndMovie', { user: req.session.user, cinemas: cinemas });
                 break;
             case "payBooking":

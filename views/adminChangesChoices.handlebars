@@ -9,16 +9,18 @@
     <div class="mb-3 form-group">
         <label for="adminChangesChoicesCinemasList" class="form-label">Cine</label>
         <select class="form-select" id="adminChangesChoicesCinemasListID">
+            <option disabled selected>Seleccione un cine</option>
             {{#each cinemas}}
-                <option>({{this.ID_Cinema}}) {{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
+                <option data-cinema-id="{{this.ID_Cinema}}">{{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
             {{/each}}
         </select>
     </div>
     <div class="mb-3 form-group">
         <label for="adminChangesChoicesMoviesList" class="form-label">Película</label>
         <select class="form-select" id="adminChangesChoicesMoviesListID">
+            <option disabled selected>Seleccione una película</option>
             {{#each movies}}
-                <option>({{this.ID_Movie}}) {{this.movie_name}} - {{this.director}}</option>
+                <option data-movie-id="{{this.ID_Movie}}">{{this.movie_name}} - {{this.director}}</option>
             {{/each}}
         </select>
     </div>
@@ -37,8 +39,9 @@
     </div>
     <div class="mb-3 form-group">
         <select class="form-select" id="adminChangesChoicesListID">
+            <option disabled selected>Seleccione una opción de reserva</option>
             {{#each choices}}
-                <option>({{this.ID_Choice}}) {{this.cinema_name}} - {{this.movie_name}} - {{this.movie_schedule}}</option>
+                <option data-choice-id="{{this.ID_Choice}}">{{this.cinema_name}} - {{this.movie_name}} - {{this.movie_schedule}}</option>
             {{/each}}
         </select>
     </div>

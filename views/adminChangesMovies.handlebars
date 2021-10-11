@@ -33,8 +33,9 @@
     </div>
     <div class="mb-3 form-group">
         <select class="form-select" id="adminChangesMoviesListID">
+            <option disabled selected>Seleccione una película</option>
             {{#each movies}}
-                <option>({{this.ID_Movie}}) {{this.movie_name}} - {{this.director}}</option>
+                <option data-movie-id="{{this.ID_Movie}}">{{this.movie_name}} - {{this.director}}</option>
             {{/each}}
         </select>
     </div>

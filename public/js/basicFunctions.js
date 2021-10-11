@@ -1,6 +1,5 @@
 // Para ahorrar en escritura
 const getValueByID = (elem) => $(`#${elem}`).val();
-const obtainNumberOfID = (elemID) => getValueByID(elemID).match(/\d+/).shift();
 
 /**
  * Devuelve si una string tiene longitud entre dos numeros (incluidos)

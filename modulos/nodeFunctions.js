@@ -25,7 +25,7 @@ exports.loginIntoSystem = async (email, password) => {
     for (let user of userList) {
         if (email == user.email) {
             // Si el email existe en la database, checkeo si la contraseña es la correcta
-            return (password == user.acc_password) ? { user: user, success: "access"} : { user: null, success: "wrong-password" };
+            return (password == user.acc_password) ? { user: user, success: "access" } : { user: null, success: "wrong-password" };
         }
     }
     return { user: null, success: "non-existent-email" };
@@ -42,11 +42,26 @@ const createEmptyMatrixOfSeats = (dim1, dim2) => {
     return matrixOfSeats;
 }
 
+exports.selectAllCinemas = async () => {
+    const cinemas = await MySQL.realizarQuery(`
+        select * from Cinemas
+        order by cinema_name, address, city;`
+    );
+    return cinemas;
+}
+
 exports.insertCinema = async (cinema_name, address, city, dim1, dim2) => {
     await MySQL.realizarQuery(`insert into Cinemas (cinema_name, address, city, dim1, dim2) 
                                values ('${cinema_name}', '${address}', '${city}', ${dim1}, ${dim2});`);
 }
 
+exports.selectAllMovies = async () => {
+    const movies = await MySQL.realizarQuery(`
+        select * from Movies
+        order by movie_name, movie_language;`
+    );
+    return movies;
+}
 
 exports.insertMovie = async (movie_name, duration, director, movie_language) => {
     await MySQL.realizarQuery(`insert into Movies (movie_name, duration, director, movie_language) values
@@ -60,17 +75,18 @@ exports.deleteMovie = async (ID_Movie) => {
 }
 
 exports.selectAllChoices = async () => {
-    return await MySQL.realizarQuery(`
+    const choices = await MySQL.realizarQuery(`
         select Choices.ID_Choice, Cinemas.cinema_name, Movies.movie_name, Choices.movie_schedule from Choices
         join Cinemas on (Cinemas.ID_Cinema = Choices.ID_Cinema)
         join Movies on (Movies.ID_Movie = Choices.ID_Movie)
-        order by Choices.ID_Choice asc;`
+        order by Cinemas.cinema_name, Movies.movie_name, Choices.movie_schedule;`
     );
+    return choices;
 }
 
 exports.insertChoice = async (ID_Cinema, ID_Movie, movie_schedule) => {
     const cinema = await MySQL.realizarQuery(`select dim1, dim2 from Cinemas where ID_Cinema = ${ID_Cinema}`);
-    const {dim1, dim2} = cinema[0];
+    const { dim1, dim2 } = cinema[0];
     const emptyMatrixOfSeats = JSON.stringify(createEmptyMatrixOfSeats(dim1, dim2));
     await MySQL.realizarQuery(`insert into Choices(ID_Cinema, ID_Movie, movie_schedule, matrix_of_seats)
                                values (${ID_Cinema}, ${ID_Movie}, '${movie_schedule}', '${emptyMatrixOfSeats}');`);
@@ -80,10 +96,10 @@ exports.deleteChoice = async (ID_Choice) => await MySQL.realizarQuery(`delete fr
 
 exports.selectMoviesByCinema = async (ID_Cinema) => {
     const moviesByCinema = await MySQL.realizarQuery(`
-        select distinct Movies.ID_Movie, Movies.movie_name, Movies.director from Choices
+        select distinct Movies.ID_Movie, Movies.movie_name, Movies.director, Movies.movie_language from Choices
         join Movies on (Movies.ID_Movie = Choices.ID_Movie)
         where Choices.ID_Cinema = ${ID_Cinema}
-        order by Movies.movie_name asc;
+        order by Movies.movie_name, Movies.movie_language asc;
     `);
     return moviesByCinema;
 }
