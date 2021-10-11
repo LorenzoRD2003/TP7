@@ -79,9 +79,9 @@ exports.deleteMovie = async (ID_Movie) => {
 
 exports.selectAllChoices = async () => {
     return await MySQL.realizarQuery(`
-        select Cinemas.cinema_name, Movies.movie_name from Choices
+        select Choices.ID_Choice, Cinemas.cinema_name, Movies.movie_name, Choices.movie_schedule from Choices
         join Cinemas on (Cinemas.ID_Cinema = Choices.ID_Cinema)
-        join Movies on (Movies.ID_Movie = Choices.ID_Movie`
+        join Movies on (Movies.ID_Movie = Choices.ID_Movie)`
     );
 }
 

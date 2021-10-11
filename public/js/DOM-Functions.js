@@ -69,7 +69,6 @@ const createAccount = () => {
 
 // Actualizar lista de cines
 const updateCinemasList = (cinemasList) => {
-    const selectCinemasList = document.getElementById("adminChangesCinemasListID");
     ajax("GET", "/updateCinemasList", null, (res) => {
         if (res) {
             res = JSON.parse(res);
@@ -121,7 +120,8 @@ const addNewCinema = () => {
         res = JSON.parse(res);
         switch(res.success) {
             case "successful":
-                updateCinemasList();
+                const selectCinemasList = document.getElementById("adminChangesCinemasListID");
+                updateCinemasList(selectCinemasList);
                 createSuccessModal("addNewCinemaModal", "El cine fue creado satisfactoriamente.");
                 break;
             case "error":
@@ -140,7 +140,8 @@ const deleteCinema = () => {
         res = JSON.parse(res);
         switch(res.success) {
             case "successful":
-                updateCinemasList();
+                const selectCinemasList = document.getElementById("adminChangesCinemasListID");
+                updateCinemasList(selectCinemasList);
                 createSuccessModal("deleteCinemaModal", "El cine fue eliminado satisfactoriamente.");
                 break;
             case "error":
@@ -149,11 +150,6 @@ const deleteCinema = () => {
         }
     });
 }
-
-
-
-
-
 
 // Agregar una nueva película
 const addNewMovie = () => {
@@ -168,7 +164,8 @@ const addNewMovie = () => {
         res = JSON.parse(res);
         switch(res.success) {
             case "successful":
-                updateMoviesList();
+                const selectMoviesList = document.getElementById("adminChangesMoviesListID");
+                updateMoviesList(selectMoviesList);
                 createSuccessModal("addNewMovieModal", "La película fue creada satisfactoriamente.");
                 break;
             case "error":
@@ -187,7 +184,8 @@ const deleteMovie = () => {
         res = JSON.parse(res);
         switch(res.success) {
             case "successful":
-                updateMoviesList();
+                const selectMoviesList = document.getElementById("adminChangesMoviesListID");
+                updateMoviesList(selectMoviesList);
                 createSuccessModal("deleteMovieModal", "La película fue eliminada satisfactoriamente.");
                 break;
             case "error":
@@ -195,5 +193,13 @@ const deleteMovie = () => {
                 break;
         }
     });
+}
+
+// Agregar nueva opción
+const addNewChoice = () => {
+    const newChoice = {
+        ID_Cinema: obtainNumberOfID("adminChangesChoicesCinemasList"),
+        ID_Movie: obtainNumberOfID("adminChangesChoicesMoviesList")
+    }
 }
 

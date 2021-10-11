@@ -114,6 +114,8 @@ app.get('/adminChangesSelector', async (req, res) => {
     }
 });
 
+app.post('/returnAdminChangesZone', (req, res) => res.render('homeAdmin', null));
+
 // Actualizar select (de HTML) de cines 
 app.get('/updateCinemasList', async (req, res) => {
     try {
