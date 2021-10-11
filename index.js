@@ -104,7 +104,6 @@ app.get('/adminChangesSelector', async (req, res) => {
                     movies: await nodeFunctions.selectAll("Movies"),
                     choices: await nodeFunctions.selectAllChoices()
                 }
-                console.log(object.choices);
                 res.render('adminChangesChoices', object);
                 break;
         }
@@ -169,7 +168,7 @@ app.post('/addNewMovie', async (req, res) => {
         console.log(err);
         res.send({ success: "error" });
     }
-})
+});
 
 // Borrar una pelicula
 app.delete('/deleteMovie', async (req, res) => {
@@ -182,4 +181,37 @@ app.delete('/deleteMovie', async (req, res) => {
     }
 });
 
+// Actualizar select (de HTML) de opciones de reserva
+app.get('/updateChoicesList', async (req, res) => {
+    try {
+        const choicesList = await nodeFunctions.selectAllChoices();
+        res.send({ choicesList: choicesList });
+    } catch (err) {
+        console.log(err);
+        res.send(null);
+    }
+});
+
+// Agregar una opción de reserva
+app.post('/addNewChoice', async (req, res) => {
+    try {
+        console.log(req.body);
+        await nodeFunctions.insertChoice(req.body.ID_Cinema, req.body.ID_Movie, req.body.movie_schedule);
+        res.send({ success: "successful" });
+    } catch (err) {
+        console.log(err);
+        res.send({ success: "error" });
+    }
+});
+
+// Borrar una opción de reserva
+app.delete('/deleteChoice', async (req, res) => {
+    try {
+        await nodeFunctions.deleteChoice(req.body.ID_Choice);
+        res.send({ success: "successful"});
+    } catch (err) {
+        console.log(err);
+        res.send({ success: "error" });
+    }
+});
 

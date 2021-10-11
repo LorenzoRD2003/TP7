@@ -99,9 +99,9 @@ const updateChoicesList = (choicesList) => {
         if (res) {
             res = JSON.parse(res);
             choicesList.innerHTML = "";
-            res.choicesList.forEach(movie => choicesList.innerHTML += `<option>(${choice.ID_Choice}) ${choice.cinema_name} - ${choice.movie_name}</option>`);
+            res.choicesList.forEach(choice => choicesList.innerHTML += `<option>(${choice.ID_Choice}) ${choice.cinema_name} - ${choice.movie_name}</option>`);
         } else {
-            createErrorModal("errorUpdateMoviesListModal", "Hubo un error al intentar actualizar la lista de películas.");
+            createErrorModal("errorUpdateMoviesListModal", "Hubo un error al intentar actualizar la lista de opciones de reservas.");
         }
     });
 }
@@ -195,11 +195,45 @@ const deleteMovie = () => {
     });
 }
 
-// Agregar nueva opción
+// Agregar nueva opción de reserva
 const addNewChoice = () => {
     const newChoice = {
-        ID_Cinema: obtainNumberOfID("adminChangesChoicesCinemasList"),
-        ID_Movie: obtainNumberOfID("adminChangesChoicesMoviesList")
-    }
+        ID_Cinema: obtainNumberOfID("adminChangesChoicesCinemasListID"),
+        ID_Movie: obtainNumberOfID("adminChangesChoicesMoviesListID"),
+        movie_schedule: getValueByID("adminChangesChoicesScheduleID")
+    };
+
+    ajax("POST", "/addNewChoice", newChoice, (res) => {
+        res = JSON.parse(res);
+        switch(res.success) {
+            case "successful":
+                const selectChoicesList = document.getElementById("adminChangesChoicesListID");
+                createSuccessModal("addNewMovieModal", "La opción de reserva fue creada satisfactoriamente.");
+                updateChoicesList(selectChoicesList);
+                break;
+            case "error":
+                createErrorModal("errorAddNewChoiceModal", "Hubo un error al intentar añadir la opción de reserva. Inténtelo nuevamente más tarde.");
+                break;
+        }
+    });
 }
 
+// Borrar una opcion de reserva
+const deleteChoice = () => {
+    const choiceToDelete = {
+        ID_Choice: obtainNumberOfID("adminChangesChoicesListID")
+    }
+    ajax("DELETE", "/deleteChoice", choiceToDelete, (res) => {
+        res = JSON.parse(res);
+        switch(res.success) {
+            case "successful":
+                const selectChoicesList = document.getElementById("adminChangesChoicesListID");
+                updateMoviesList(selectChoicesList);
+                createSuccessModal("deleteChoiceModal", "La opción de reserva fue eliminada satisfactoriamente.");
+                break;
+            case "error":
+                createErrorModal("errordeleteMovieModal", "Hubo un error al intentar opción de reserva. Inténtelo nuevamente más tarde.");
+                break;
+        }
+    });
+}

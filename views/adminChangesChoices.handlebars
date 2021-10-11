@@ -7,7 +7,7 @@
     </div>
     <div class="mb-3 form-group">
         <label for="adminChangesChoicesCinemasList" class="form-label">Cine</label>
-        <select class="form-select" id="adminChangesChoicesCinemasList">
+        <select class="form-select" id="adminChangesChoicesCinemasListID">
             {{#each cinemas}}
                 <option>({{this.ID_Cinema}}) {{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
             {{/each}}
@@ -15,7 +15,7 @@
     </div>
     <div class="mb-3 form-group">
         <label for="adminChangesChoicesMoviesList" class="form-label">Película</label>
-        <select class="form-select" id="adminChangesChoicesMoviesList">
+        <select class="form-select" id="adminChangesChoicesMoviesListID">
             {{#each movies}}
                 <option>({{this.ID_Movie}}) {{this.movie_name}} - {{this.director}}</option>
             {{/each}}
@@ -23,7 +23,7 @@
     </div>
     <div class="mb-3 form-group">
         <label for="adminChangesChoicesSchedule" class="form-label">Horario</label>
-        <input type="time" class="form-control" id="adminChangesChoicesSchedule" value="" placeholder="Horario">
+        <input type="time" class="form-control" id="adminChangesChoicesScheduleID" value="" placeholder="Horario">
     </div>
     <div class="mb-3 form-check">
         <button type="button" class="btn btn-danger" onclick="addNewChoice()">Ingresar opción</button>
@@ -35,7 +35,7 @@
         <h3>Eliminar una opción</h3>
     </div>
     <div class="mb-3 form-group">
-        <select class="form-select" id="adminChangesMoviesListID">
+        <select class="form-select" id="adminChangesChoicesListID">
             {{#each choices}}
                 <option>({{this.ID_Choice}}) {{this.cinema_name}} - {{this.movie_name}} - {{this.movie_schedule}}</option>
             {{/each}}
