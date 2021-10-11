@@ -228,7 +228,7 @@ const deleteChoice = () => {
         switch(res.success) {
             case "successful":
                 const selectChoicesList = document.getElementById("adminChangesChoicesListID");
-                updateMoviesList(selectChoicesList);
+                updateChoicesList(selectChoicesList);
                 createSuccessModal("deleteChoiceModal", "La opción de reserva fue eliminada satisfactoriamente.");
                 break;
             case "error":

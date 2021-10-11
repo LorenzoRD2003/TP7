@@ -32,7 +32,6 @@ exports.loginIntoSystem = async (email, password) => {
 };
 
 
-const deleteBookingByUsingChoice = async (ID_Choice) => await MySQL.realizarQuery(`delete from Bookings where ID_Choice = ${ID_Choice}`);
 
 const createEmptyMatrixOfSeats = (dim1, dim2) => {
     const emptySeat = {
@@ -89,9 +88,11 @@ exports.selectAllChoices = async () => {
 }
 
 exports.insertChoice = async (ID_Cinema, ID_Movie, movie_schedule) => {
-    // const emptyMatrixOfSeats = JSON.stringify(createEmptyMatrixOfSeats(dim1, dim2));
-    await MySQL.realizarQuery(`insert into Choices(ID_Cinema, ID_Movie, movie_schedule)
-                               values (${ID_Cinema}, ${ID_Movie}, '${movie_schedule}');`);
+    const cinema = await MySQL.realizarQuery(`select dim1, dim2 from Cinemas where ID_Cinema = ${ID_Cinema}`);
+    const {dim1, dim2} = cinema[0];
+    const emptyMatrixOfSeats = JSON.stringify(createEmptyMatrixOfSeats(dim1, dim2));
+    await MySQL.realizarQuery(`insert into Choices(ID_Cinema, ID_Movie, movie_schedule, matrix_of_seats)
+                               values (${ID_Cinema}, ${ID_Movie}, '${movie_schedule}', '${emptyMatrixOfSeats}');`);
 }
 
 exports.deleteChoice = async (ID_Choice) => {

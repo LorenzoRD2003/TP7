@@ -195,7 +195,6 @@ app.get('/updateChoicesList', async (req, res) => {
 // Agregar una opción de reserva
 app.post('/addNewChoice', async (req, res) => {
     try {
-        console.log(req.body);
         await nodeFunctions.insertChoice(req.body.ID_Cinema, req.body.ID_Movie, req.body.movie_schedule);
         res.send({ success: "successful" });
     } catch (err) {
