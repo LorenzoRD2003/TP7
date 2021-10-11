@@ -99,7 +99,7 @@ const updateChoicesList = (choicesList) => {
         if (res) {
             res = JSON.parse(res);
             choicesList.innerHTML = "";
-            res.choicesList.forEach(choice => choicesList.innerHTML += `<option>(${choice.ID_Choice}) ${choice.cinema_name} - ${choice.movie_name}</option>`);
+            res.choicesList.forEach(choice => choicesList.innerHTML += `<option>(${choice.ID_Choice}) ${choice.cinema_name} - ${choice.movie_name} - ${choice.movie_schedule}</option>`);
         } else {
             createErrorModal("errorUpdateMoviesListModal", "Hubo un error al intentar actualizar la lista de opciones de reservas.");
         }
@@ -214,6 +214,64 @@ const deleteChoice = () => {
             case "error":
                 createErrorModal("errordeleteMovieModal", "Hubo un error al intentar opción de reserva. Inténtelo nuevamente más tarde.");
                 break;
+        }
+    });
+}
+
+
+// Actualizar lista de peliculas por cine en la pantalla de selección
+const getMoviesForThisCinema = () => {
+    const cinemaChosen = {
+        ID_Cinema: obtainNumberOfID("selectCinemaAndMovieCinemasListID")
+    }
+    
+    const moviesList = document.getElementById("selectCinemaAndMovieMoviesListID");
+    moviesList.innerHTML = "<option disabled selected>Seleccione una película</option>";
+    
+    const schedulesList = document.getElementById("selectCinemaAndMovieScheduleID");
+    schedulesList.innerHTML = "<option disabled selected>Seleccione un horario</option>";
+    schedulesList.disabled = true;
+    disableButton("selectCinemaAndMovieContinueButtonID");
+    
+    ajax("GET", "/getMoviesForThisCinema", cinemaChosen, (res) => {
+        if (res) {
+            res = JSON.parse(res);
+            if (res.moviesList.length) {
+                res.moviesList.forEach(movie => moviesList.innerHTML += `<option>(${movie.ID_Movie}) ${movie.movie_name} - ${movie.director}</option>`);
+                moviesList.disabled = false;
+            } else {
+                moviesList.disabled = true;
+                createErrorModal("errorUpdateCinemaAndMovieCinemasListModal", "No hay películas en este cine.");
+            }
+        } else {
+            createErrorModal("errorUpdateCinemaAndMovieCinemasListModal", "Hubo un error al intentar actualizar la lista de películas de este cine. Inténtelo nuevamente más tarde.");
+        }
+    });
+}
+
+// Actualizar lista de horarios en la pantalla de selección
+const getSchedule = () => {
+    const object = {
+        ID_Cinema: obtainNumberOfID("selectCinemaAndMovieCinemasListID"),
+        ID_Movie: obtainNumberOfID("selectCinemaAndMovieMoviesListID")
+    }
+
+    const schedulesList = document.getElementById("selectCinemaAndMovieScheduleID");
+    schedulesList.innerHTML = "<option disabled selected>Seleccione un horario</option>";
+    disableButton("selectCinemaAndMovieContinueButtonID");
+    
+    ajax("GET", "/getSchedule", object, (res) => {
+        if (res) {
+            res = JSON.parse(res);
+            if (res.schedulesList.length) {
+                res.schedulesList.forEach(schedule => schedulesList.innerHTML += `<option>${schedule.movie_schedule}</option>`);
+                schedulesList.disabled = false;
+            } else {
+                schedulesList.disabled = true;
+                createErrorModal("errorUpdateCinemaAndMovieSchedulesListModal", "No hay películas en este cine.");
+            }
+        } else {
+            createErrorModal("errorUpdateCinemaAndMovieSchedulesListModal", "Hubo un error al intentar actualizar la lista de horarios de esa película. Inténtelo nuevamente más tarde.");
         }
     });
 }

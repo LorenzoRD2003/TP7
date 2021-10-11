@@ -76,9 +76,23 @@ exports.insertChoice = async (ID_Cinema, ID_Movie, movie_schedule) => {
                                values (${ID_Cinema}, ${ID_Movie}, '${movie_schedule}', '${emptyMatrixOfSeats}');`);
 }
 
-exports.deleteChoice = async (ID_Choice) => {
-    await MySQL.realizarQuery(`delete from Choices where ID_Choice = ${ID_Choice}`);
+exports.deleteChoice = async (ID_Choice) => await MySQL.realizarQuery(`delete from Choices where ID_Choice = ${ID_Choice}`);
+
+exports.selectMoviesByCinema = async (ID_Cinema) => {
+    const moviesByCinema = await MySQL.realizarQuery(`
+        select distinct Movies.ID_Movie, Movies.movie_name, Movies.director from Choices
+        join Movies on (Movies.ID_Movie = Choices.ID_Movie)
+        where Choices.ID_Cinema = ${ID_Cinema}
+        order by Movies.movie_name asc;
+    `);
+    return moviesByCinema;
 }
 
-
-
+exports.selectScheduleOfChoice = async (ID_Cinema, ID_Movie) => {
+    const schedules = await MySQL.realizarQuery(`
+        select Choices.movie_schedule from Choices
+        where Choices.ID_Cinema = ${ID_Cinema} and Choices.ID_Movie = ${ID_Movie}
+        order by Choices.movie_schedule asc;
+    `);
+    return schedules;
+}

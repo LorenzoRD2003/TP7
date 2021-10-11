@@ -65,7 +65,7 @@ app.post('/loginIntoSystem', async (req, res) => {
             email: req.body.email,
             password: req.body.password
         }
-        res.render('homeAdmin', req.session.user);
+        res.render('homeAdmin', { user: req.session.user });
         return;
     }
 
@@ -74,7 +74,7 @@ app.post('/loginIntoSystem', async (req, res) => {
         switch(success) {
             case "access":
                 req.session.user = user; // Variable de sesion
-                res.render('home', req.session.user);
+                res.render('home', { user: req.session.user });
                 break;
             case "wrong-password":
                 res.render('login', { error: "La contraseña ingresada es incorrecta." });
@@ -102,14 +102,15 @@ app.get('/adminChangesSelector', async (req, res) => {
         switch(req.query.adminChangesSelectorName) {
             case "Cinemas":
                 const cinemas = await nodeFunctions.selectAll("Cinemas");
-                res.render('adminChangesCinemas', { cinemas: cinemas });
+                res.render('adminChangesCinemas', { user: req.session.user, cinemas: cinemas });
                 break;
             case "Movies":
                 const movies = await nodeFunctions.selectAll("Movies");
-                res.render('adminChangesMovies', { movies: movies });
+                res.render('adminChangesMovies', { user: req.session.user, movies: movies });
                 break;
             case "Choices":
                 const object = {
+                    user: req.session.user,
                     cinemas: await nodeFunctions.selectAll("Cinemas"),
                     movies: await nodeFunctions.selectAll("Movies"),
                     choices: await nodeFunctions.selectAllChoices()
@@ -123,7 +124,7 @@ app.get('/adminChangesSelector', async (req, res) => {
     }
 });
 
-app.post('/returnAdminChangesZone', (req, res) => res.render('homeAdmin', null));
+app.post('/returnAdminChangesZone', (req, res) => res.render('homeAdmin', { user: req.session.user }));
 
 // Actualizar select (de HTML) de cines 
 app.get('/updateCinemasList', async (req, res) => {
@@ -225,3 +226,52 @@ app.delete('/deleteChoice', async (req, res) => {
 });
 
 
+// Elegir página a la cual va el usuario
+app.post('/userSelectNextOption', async (req, res) => {
+    // En cada caso, primero hago llamada a la base de datos para los datos que necesite.;
+    try {
+        switch(req.body.userSelectNextOptionName) {
+            case "makeBooking":
+                const cinemas = await nodeFunctions.selectAll("Cinemas");
+                res.render('selectCinemaAndMovie', { user: req.session.user, cinemas: cinemas });
+                break;
+            case "payBooking":
+                // const bookings = await nodeFunctions.selectAll("Bookings");
+                res.render('home', null);
+                break;
+            case "modifyBooking":
+                // const bookings = await nodeFunctions.selectAll("Bookings");
+                res.render('home', null);
+                break;
+        }
+    } catch (err) {
+        console.log(err);
+        res.render('homeAdmin', { user: req.session.user, error: "Ocurrió un error. Inténtelo nuevamente." });
+    }
+})
+
+// Volver a home.handlebars
+app.post('/returnHome', (req, res) => res.render('home', { user: req.session.user }));
+
+// Actualizar lista de películas por cine
+app.get('/getMoviesForThisCinema', async (req, res) => {
+    try {
+        const moviesList = await nodeFunctions.selectMoviesByCinema(req.query.ID_Cinema);
+        res.send({ moviesList: moviesList });
+    } catch (err) {
+        console.log(err);
+        res.send(null);
+    }
+});
+
+// Actualizar lista de horarios
+app.get('/getSchedule', async (req, res) => {
+    try {
+        const schedulesList = await nodeFunctions.selectScheduleOfChoice(req.query.ID_Cinema, req.query.ID_Movie);
+        console.log(schedulesList);
+        res.send({ schedulesList: schedulesList });
+    } catch (err) {
+        console.log(err);
+        res.send(null);
+    }
+})

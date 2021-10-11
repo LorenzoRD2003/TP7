@@ -49,3 +49,7 @@ const fullUserValidation = (name, surname, dni, email, password) => {
     return true;
 };
 
+// Activar y desactivar un botón
+const enableButton = (buttonID) => document.getElementById(`${buttonID}`).disabled = false;
+const disableButton = (buttonID) => document.getElementById(`${buttonID}`).disabled = true;
+
