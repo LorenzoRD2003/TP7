@@ -1,6 +1,7 @@
+{{> navbar this}}
 <div class="mt-5 mb-3 container-sm">
         <h2>Zona de modificaciones de cines.</h2>
-    </div>
+</div>
 <div class="container-sm bg-light mb-3 p-3 border">
     <div class="mb-3 form-group">
         <h3>Agregar un cine</h3>
@@ -30,22 +31,6 @@
     </div>
     <div class="mb-3 form-check">
         <button type="button" class="btn btn-danger" onclick="addNewCinema()">Ingresar cine</button>
-    </div>
-</div>
-
-<div class="container-sm bg-light mb-3 p-3 border">
-    <div class="mb-3 form-group">
-        <h3>Eliminar un cine</h3>
-    </div>
-    <div class="mb-3 form-group">
-        <select class="form-select" id="adminChangesCinemasListID">
-            {{#each cinemas}}
-                <option>({{this.ID_Cinema}}) {{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
-            {{/each}}
-        </select>
-    </div>
-    <div class="mb-3 form-check">
-        <button type="button" class="btn btn-danger" onclick="deleteCinema()">Eliminar cine</button>
     </div>
 </div>
 

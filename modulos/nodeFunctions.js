@@ -47,18 +47,6 @@ exports.insertCinema = async (cinema_name, address, city, dim1, dim2) => {
                                values ('${cinema_name}', '${address}', '${city}', ${dim1}, ${dim2});`);
 }
 
-exports.deleteCinema = async (ID_Cinema) => {
-    // Borro el cine de las tablas de opciones de reserva y de cines
-    await MySQL.realizarQuery(`delete from Choices where ID_Cinema = ${ID_Cinema}`);
-    await MySQL.realizarQuery(`delete from Cinemas where ID_Cinema = ${ID_Cinema}`);
-
-    /*
-    const choicesWithThisCinemaList = await MySQL.realizarQuery(`select ID_Choice from Choices where ID_Cinema = ${ID_Cinema}`);
-    await MySQL.realizarQuery(`delete from Choices where ID_Cinema = ${ID_Cinema}`);
-
-    choicesWithThisCinemaList.forEach(async choice => await deleteBookingByUsingChoice(choice.ID_Choice));
-    */
-}
 
 exports.insertMovie = async (movie_name, duration, director, movie_language) => {
     await MySQL.realizarQuery(`insert into Movies (movie_name, duration, director, movie_language) values
@@ -69,13 +57,6 @@ exports.deleteMovie = async (ID_Movie) => {
     // Borro la pelicula de la tabla peliculas, borra todas las posibles elecciones y las reservas
     await MySQL.realizarQuery(`delete from Choices where ID_Movie = ${ID_Movie}`);
     await MySQL.realizarQuery(`delete from Movies where ID_Movie = ${ID_Movie}`);
-
-    /*
-    const choicesWithThisMovieList = await MySQL.realizarQuery(`select ID_Choice from Choices where ID_Movie = ${ID_Movie}`);
-    await MySQL.realizarQuery(`delete from Choices where ID_Movie = ${ID_Movie}`);
-
-    choicesWithThisMovieList.forEach(async choice => await deleteBookingByUsingChoice(choice.ID_Choice));
-    */
 }
 
 exports.selectAllChoices = async () => {

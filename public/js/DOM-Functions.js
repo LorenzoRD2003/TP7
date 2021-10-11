@@ -131,26 +131,6 @@ const addNewCinema = () => {
     })
 }
 
-// Borrar un cine
-const deleteCinema = () => {
-    const cinemaToDelete = {
-        ID_Cinema: obtainNumberOfID("adminChangesCinemasListID")
-    }
-    ajax("DELETE", "/deleteCinema", cinemaToDelete, (res) => {
-        res = JSON.parse(res);
-        switch(res.success) {
-            case "successful":
-                const selectCinemasList = document.getElementById("adminChangesCinemasListID");
-                updateCinemasList(selectCinemasList);
-                createSuccessModal("deleteCinemaModal", "El cine fue eliminado satisfactoriamente.");
-                break;
-            case "error":
-                createErrorModal("errordeleteCinemaModal", "Hubo un error al intentar eliminar el cine. Inténtelo nuevamente más tarde.");
-                break;
-        }
-    });
-}
-
 // Agregar una nueva película
 const addNewMovie = () => {
     const newMovie = {

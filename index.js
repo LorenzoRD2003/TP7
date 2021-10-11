@@ -61,7 +61,11 @@ app.post('/createAccount', async (req, res) => {
 // Iniciar sesión
 app.post('/loginIntoSystem', async (req, res) => {
     if (req.body.email == "admin" && req.body.password == "admin") {
-        res.render('homeAdmin', null);
+        req.session.user = { 
+            email: req.body.email,
+            password: req.body.password
+        }
+        res.render('homeAdmin', req.session.user);
         return;
     }
 
@@ -70,7 +74,7 @@ app.post('/loginIntoSystem', async (req, res) => {
         switch(success) {
             case "access":
                 req.session.user = user; // Variable de sesion
-                res.render('home', user);
+                res.render('home', req.session.user);
                 break;
             case "wrong-password":
                 res.render('login', { error: "La contraseña ingresada es incorrecta." });
@@ -83,6 +87,12 @@ app.post('/loginIntoSystem', async (req, res) => {
         console.log(err);
         res.render('login', { error: "Ocurrió un error. Inténtelo nuevamente." });
     }
+});
+
+// Cerrar sesión
+app.post('/logout', async (req, res) => {
+    req.session.destroy();
+    res.render('login', null);
 });
 
 // Elegir sección para hacer cambios de tablas
@@ -213,4 +223,5 @@ app.delete('/deleteChoice', async (req, res) => {
         res.send({ success: "error" });
     }
 });
+
 
