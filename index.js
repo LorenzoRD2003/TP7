@@ -268,10 +268,20 @@ app.get('/getMoviesForThisCinema', async (req, res) => {
 app.get('/getSchedule', async (req, res) => {
     try {
         const schedulesList = await nodeFunctions.selectScheduleOfChoice(req.query.ID_Cinema, req.query.ID_Movie);
-        console.log(schedulesList);
         res.send({ schedulesList: schedulesList });
     } catch (err) {
         console.log(err);
         res.send(null);
     }
 })
+
+app.post("/continueToSelectSeats", async (req, res) => {
+    try {
+        const selectedCinema = (await nodeFunctions.selectAllOfSelectedChoice(req.body.id_cinema, req.body.id_movie, req.body.movie_schedule))[0];
+        selectedCinema.matrix_of_seats = JSON.parse(selectedCinema.matrix_of_seats);
+        res.render("selectSeats", selectedCinema);
+    } catch (err) {
+        console.log(err);
+        res.send(null);
+    }
+});

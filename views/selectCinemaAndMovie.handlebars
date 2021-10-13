@@ -3,35 +3,41 @@
     <h2>Zona de selección de cine y película.</h2>
 </div>
 <div class="container-sm bg-light mb-3 p-3 border">
-    <div class="mb-3 form-group">
-        <h3>Elegir cine y película</h3>
-    </div>
-    <div class="mb-3 form-group">
-        <label for="selectCinemaAndMovieCinemasListID" class="form-label">Cine</label>
-        <select class="form-select" id="selectCinemaAndMovieCinemasListID" onchange="getMoviesForThisCinema()">
-            <option disabled selected>Seleccione un cine</option>
-            {{#each cinemas}}
-                <option data-cinema-id="{{this.ID_Cinema}}">{{this.cinema_name}} - {{this.address}} - {{this.city}}</option>
-            {{/each}}
-        </select>
-    </div>
-    <div class="mb-3 form-group">
-        <label for="selectCinemaAndMovieMoviesListID" class="form-label">Película</label>
-        <select class="form-select" id="selectCinemaAndMovieMoviesListID" onchange="getSchedule()" disabled>
-            <option disabled selected>Seleccione una película</option>
-            <!-- Acá se van a introducir las películas en cuanto elijamos un cine -->
-        </select>
-    </div>
-    <div class="mb-3 form-group">
-        <label for="selectCinemaAndMovieScheduleID" class="form-label">Horario</label>
-        <select class="form-select" id="selectCinemaAndMovieScheduleID" onchange="enableButton('selectCinemaAndMovieContinueButtonID')" disabled>
-            <option disabled selected>Seleccione un horario</option>
-            <!-- Acá se van a introducir los horarios en cuanto elijamos una película -->
-        </select>
-    </div>
-    <div class="mb-3 form-check">
-        <button type="button" id="selectCinemaAndMovieContinueButtonID" class="btn btn-success" disabled>Continuar</button>
-    </div>
+    <form id="continueToSelectSeatFormID" action="/continueToSelectSeats" method="POST">
+        <div class="mb-3 form-group">
+            <h3>Elegir cine y película</h3>
+        </div>
+        <div class="mb-3 form-group">
+            <label for="selectCinemaAndMovieCinemasListID" class="form-label">Cine</label>
+            <select name="id_cinema" class="form-select" id="selectCinemaAndMovieCinemasListID" onchange="getMoviesForThisCinema()">
+                <option disabled selected>Seleccione un cine</option>
+                {{#each cinemas}}
+                <option data-cinema-id="{{this.ID_Cinema}}" value="{{this.ID_Cinema}}">{{this.cinema_name}} -
+                    {{this.address}} - {{this.city}}
+                </option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="mb-3 form-group">
+            <label for="selectCinemaAndMovieMoviesListID" class="form-label">Película</label>
+            <select name="id_movie" class="form-select" id="selectCinemaAndMovieMoviesListID" onchange="getSchedule()" disabled>
+                <option disabled selected>Seleccione una película</option>
+                <!-- Acá se van a introducir las películas en cuanto elijamos un cine -->
+            </select>
+        </div>
+        <div class="mb-3 form-group">
+            <label for="selectCinemaAndMovieScheduleID" class="form-label">Horario</label>
+            <select name="movie_schedule" class="form-select" id="selectCinemaAndMovieScheduleID"
+                onchange="enableButton('selectCinemaAndMovieContinueButtonID')" disabled>
+                <option disabled selected>Seleccione un horario</option>
+                <!-- Acá se van a introducir los horarios en cuanto elijamos una película -->
+            </select>
+        </div>
+        <div class="mb-3 form-check">
+            <button type="button" id="selectCinemaAndMovieContinueButtonID" class="btn btn-success"
+                onclick="continueToSelectSeat()" disabled>Continuar</button>
+        </div>
+    </form>
 </div>
 
 {{> returnHome this}}

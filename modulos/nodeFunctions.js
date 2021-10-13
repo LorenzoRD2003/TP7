@@ -112,3 +112,11 @@ exports.selectScheduleOfChoice = async (ID_Cinema, ID_Movie) => {
     `);
     return schedules;
 }
+
+exports.selectAllOfSelectedChoice = async (ID_Cinema, ID_Movie, movie_schedule) => {
+    const selectedChoice = await MySQL.realizarQuery(`
+        select * from Choices
+        where ID_Cinema = ${ID_Cinema} and ID_Movie = ${ID_Movie} and movie_schedule = '${movie_schedule}';
+    `);
+    return selectedChoice;
+}

@@ -170,10 +170,8 @@ const addNewMovie = () => {
 
 // Borrar una película
 const deleteMovie = () => {
-    const moviesList = document.getElementById("adminChangesMoviesListID");
-    const movieIndex = moviesList.selectedIndex;
     const movieToDelete = {
-        ID_Movie: moviesList[movieIndex].dataset.movieId
+        ID_Movie: getDatasetOfOption("adminChangesMoviesListID").movieId
     }
 
     ajax("DELETE", "/deleteMovie", movieToDelete, (res) => {
@@ -193,15 +191,9 @@ const deleteMovie = () => {
 
 // Agregar nueva opción de reserva
 const addNewChoice = () => {
-    const cinemasList = document.getElementById("adminChangesChoicesCinemasListID");
-    const cinemaIndex = cinemasList.selectedIndex;
-
-    const moviesList = document.getElementById("adminChangesChoicesMoviesListID");
-    const movieIndex = moviesList.selectedIndex;
-
     const newChoice = {
-        ID_Cinema: cinemasList[cinemaIndex].dataset.cinemaId,
-        ID_Movie: moviesList[movieIndex].dataset.movieId,
+        ID_Cinema: getDatasetOfOption("adminChangesChoicesCinemasListID").cinemaId,
+        ID_Movie: getDatasetOfOption("adminChangesChoicesMoviesListID").movieId,
         movie_schedule: getValueByID("adminChangesChoicesScheduleID")
     };
 
@@ -222,10 +214,8 @@ const addNewChoice = () => {
 
 // Borrar una opcion de reserva
 const deleteChoice = () => {
-    const choicesList = document.getElementById("adminChangesChoicesListID");
-    const choiceIndex = choicesList.selectedIndex;
     const choiceToDelete = {
-        ID_Choice: choicesList[choiceIndex].dataset.choiceId
+        ID_Choice: getDatasetOfOption("adminChangesChoicesListID").choiceId
     }
     
     ajax("DELETE", "/deleteChoice", choiceToDelete, (res) => {
@@ -246,10 +236,8 @@ const deleteChoice = () => {
 
 // Actualizar lista de peliculas por cine en la pantalla de selección
 const getMoviesForThisCinema = () => {
-    const cinemasList = document.getElementById("selectCinemaAndMovieCinemasListID");
-    const cinemaIndex = cinemasList.selectedIndex;
     const cinemaChosen = {
-        ID_Cinema: cinemasList[cinemaIndex].dataset.cinemaId
+        ID_Cinema: getDatasetOfOption("selectCinemaAndMovieCinemasListID").cinemaId
     }
     
     const moviesList = document.getElementById("selectCinemaAndMovieMoviesListID");
@@ -266,7 +254,7 @@ const getMoviesForThisCinema = () => {
             if (res.moviesList.length) {
                 res.moviesList.forEach(movie => {
                     let option = document.createElement("option");
-                    option.text = `${movie.movie_name} - ${movie.director}`;
+                    option.text = `${movie.movie_name} - ${movie.director} - ${movie.movie_language}`;
                     option.setAttribute('data-movie-id', movie.ID_Movie);
                     moviesList.appendChild(option);
                 });
@@ -283,15 +271,9 @@ const getMoviesForThisCinema = () => {
 
 // Actualizar lista de horarios en la pantalla de selección
 const getSchedule = () => {
-    const cinemasList = document.getElementById("selectCinemaAndMovieCinemasListID");
-    const cinemaIndex = cinemasList.selectedIndex;
-
-    const moviesList = document.getElementById("selectCinemaAndMovieMoviesListID");
-    const movieIndex = moviesList.selectedIndex;
-
     const object = {
-        ID_Cinema: cinemasList[cinemaIndex].dataset.cinemaId,
-        ID_Movie: moviesList[movieIndex].dataset.movieId
+        ID_Cinema: getDatasetOfOption("selectCinemaAndMovieCinemasListID").cinemaId,
+        ID_Movie: getDatasetOfOption("selectCinemaAndMovieMoviesListID").movieId
     }
 
     const schedulesList = document.getElementById("selectCinemaAndMovieScheduleID");
@@ -312,4 +294,11 @@ const getSchedule = () => {
             createErrorModal("errorUpdateCinemaAndMovieSchedulesListModal", "Hubo un error al intentar actualizar la lista de horarios de esa película. Inténtelo nuevamente más tarde.");
         }
     });
+}
+
+// Continuar a la pantalla de selección de asientos
+const continueToSelectSeat = () => {
+    const selectedOption = getSelectedOption("selectCinemaAndMovieMoviesListID");
+    selectedOption.value = getDatasetOfOption("selectCinemaAndMovieMoviesListID").movieId;
+    document.getElementById("continueToSelectSeatFormID").submit();
 }

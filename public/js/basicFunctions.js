@@ -1,5 +1,11 @@
 // Para ahorrar en escritura
 const getValueByID = (elem) => $(`#${elem}`).val();
+const getSelectedOption = (selectElemID) => {
+    const selectElem = document.getElementById(selectElemID);
+    const selectedIndex = selectElem.selectedIndex;
+    return selectElem[selectedIndex];
+}
+const getDatasetOfOption = (selectElemID) => getSelectedOption(selectElemID).dataset;
 
 /**
  * Devuelve si una string tiene longitud entre dos numeros (incluidos)
