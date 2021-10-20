@@ -1,9 +1,36 @@
 {{> navbar this}}
 
-{{#each matrix_of_seats}}
-    <h1>
-        {{#each this}}
-            A
+<body onload="startEventSeats()">
+    <div class="container-sm bg-light mb-3 p-3 border">
+        <div class="mb-3 form-group">
+            <h3>Opciones seleccionadas</h3>
+            <ul data-choice-id="{{selectedChoice.ID_Choice}}">
+                <li>Cine: {{selectedChoice.cinema_name}} - {{selectedChoice.address}} - {{selectedChoice.city}}</li>
+                <li>Película: {{selectedChoice.movie_name}} - {{selectedChoice.director}} - {{selectedChoice.movie_language}} - {{selectedChoice.duration}} minutos</li>
+                <li>Horario: {{selectedChoice.movie_schedule}}</li>
+            </ul>
+        </div>
+        <div class="mb-3 form-group">
+            <h3>Elegir asiento</h3>
+        </div>
+        <div class="screen text-center mx-auto mb-3 p-1">Pantalla</div>
+        {{#each selectedChoice.matrix_of_seats}}
+        <div data-row-number="{{@index}}" class="text-center">
+            {{#each this}}
+            {{#if this.isEmpty}}
+            <button data-column-number="{{@index}}" class="btn btn-success btn-seat m-1">E</button>
+            {{else}}
+            <button data-column-number="{{@index}}" class="btn btn-danger btn-seat m-1">NE</button>
+            {{/if}}
+            {{/each}}
+        </div>
         {{/each}}
-    </h1>
-{{/each}}
+        <div class="my-3 form-check text-center">
+            <button type="button" id="assignSeatsButtonID" class="btn btn-success btn-lg" onclick="assignSeats()" disabled>Asignar asientos</button>
+        </div>
+        <form id="continueToBookingConfirmationFormID" action="/continueToBookingConfirmation" method="GET">
+        </form>
+    </div>
+</body>
+
+{{> returnHome this}}

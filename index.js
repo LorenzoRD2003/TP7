@@ -11,7 +11,7 @@
 */
 //Cargo librerías instaladas y necesarias
 const express = require('express'); //Para el manejo del servidor Web
-const exphbs  = require('express-handlebars'); //Para el manejo de los HTML
+const exphbs = require('express-handlebars'); //Para el manejo de los HTML
 const bodyParser = require('body-parser'); //Para el manejo de los strings JSON
 const nodeFunctions = require('./modulos/nodeFunctions');
 const session = require('express-session');
@@ -23,14 +23,14 @@ app.use(express.static('public')); //Expongo al lado cliente la carpeta "public"
 
 app.use(bodyParser.urlencoded({ extended: false })); //Inicializo el parser JSON
 app.use(bodyParser.json());
-app.use(session({secret: 'erwltkjqwqmnsdflkjnqweradsfjklbnewdsfwrgfsfgvaxcvjbasdkfbawehf', resave: true, saveUninitialized: true}));
+app.use(session({ secret: 'erwltkjqwqmnsdflkjnqweradsfjklbnewdsfwrgfsfgvaxcvjbasdkfbawehf', resave: true, saveUninitialized: true }));
 
-app.engine('handlebars', exphbs({defaultLayout: 'main'})); //Inicializo Handlebars. Utilizo como base el layout "Main".
+app.engine('handlebars', exphbs({ defaultLayout: 'main' })); //Inicializo Handlebars. Utilizo como base el layout "Main".
 app.set('view engine', 'handlebars'); //Inicializo Handlebars
 
 const Listen_Port = 3000; //Puerto por el que estoy ejecutando la página Web
 
-app.listen(Listen_Port, function() {
+app.listen(Listen_Port, function () {
     console.log('Servidor NodeJS corriendo en http://localhost:' + Listen_Port + '/');
 });
 
@@ -49,7 +49,7 @@ app.post('/createAccount', async (req, res) => {
         else {
             // Inserto el usuario en la base de datos
             await nodeFunctions.insertUser(req.body.name, req.body.surname, req.body.dni, req.body.email, req.body.password);
-            res.send({ success: "successful"});
+            res.send({ success: "successful" });
         }
     }
     catch (err) {
@@ -61,7 +61,7 @@ app.post('/createAccount', async (req, res) => {
 // Iniciar sesión
 app.post('/loginIntoSystem', async (req, res) => {
     if (req.body.email == "admin" && req.body.password == "admin") {
-        req.session.user = { 
+        req.session.user = {
             email: req.body.email,
             password: req.body.password
         }
@@ -71,7 +71,7 @@ app.post('/loginIntoSystem', async (req, res) => {
 
     try {
         const { user, success } = await nodeFunctions.loginIntoSystem(req.body.email, req.body.password);
-        switch(success) {
+        switch (success) {
             case "access":
                 req.session.user = user; // Variable de sesion
                 res.render('home', { user: req.session.user });
@@ -95,36 +95,27 @@ app.post('/logout', async (req, res) => {
     res.render('login', null);
 });
 
-// Elegir sección para hacer cambios de tablas
-app.get('/adminChangesSelector', async (req, res) => {
-    // En cada caso, primero hago llamada a la base de datos para los datos que necesite.
-    try {
-        switch(req.query.adminChangesSelectorName) {
-            case "Cinemas":
-                const cinemas = await nodeFunctions.selectAllCinemas();
-                res.render('adminChangesCinemas', { user: req.session.user, cinemas: cinemas });
-                break;
-            case "Movies":
-                const movies = await nodeFunctions.selectAllMovies();
-                res.render('adminChangesMovies', { user: req.session.user, movies: movies });
-                break;
-            case "Choices":
-                const object = {
-                    user: req.session.user,
-                    cinemas: await nodeFunctions.selectAllCinemas(),
-                    movies: await nodeFunctions.selectAllMovies(),
-                    choices: await nodeFunctions.selectAllChoices()
-                }
-                res.render('adminChangesChoices', object);
-                break;
-        }
-    } catch (err) {
-        console.log(err);
-        res.render('homeAdmin', { error: "Ocurrió un error. Inténtelo nuevamente." });
-    }
+app.get('/adminChangesCinemas', async (req, res) => {
+    const cinemas = await nodeFunctions.selectAllCinemas();
+    res.render('adminChangesCinemas', { user: req.session.user, cinemas: cinemas });
 });
 
-app.post('/returnAdminChangesZone', (req, res) => res.render('homeAdmin', { user: req.session.user }));
+app.get('/adminChangesMovies', async (req, res) => {
+    const movies = await nodeFunctions.selectAllMovies();
+    res.render('adminChangesMovies', { user: req.session.user, movies: movies });
+});
+
+app.get('/adminChangesChoices', async (req, res) => {
+    const object = {
+        user: req.session.user,
+        cinemas: await nodeFunctions.selectAllCinemas(),
+        movies: await nodeFunctions.selectAllMovies(),
+        choices: await nodeFunctions.selectAllChoices()
+    }
+    res.render('adminChangesChoices', object);
+});
+
+app.get('/returnAdminChangesZone', (req, res) => res.render('homeAdmin', { user: req.session.user }));
 
 // Actualizar select (de HTML) de cines 
 app.get('/updateCinemasList', async (req, res) => {
@@ -152,7 +143,7 @@ app.post('/addNewCinema', async (req, res) => {
 app.delete('/deleteCinema', async (req, res) => {
     try {
         await nodeFunctions.deleteCinema(req.body.ID_Cinema);
-        res.send({ success: "successful"});
+        res.send({ success: "successful" });
     } catch (err) {
         console.log(err);
         res.send({ success: "error" });
@@ -185,7 +176,7 @@ app.post('/addNewMovie', async (req, res) => {
 app.delete('/deleteMovie', async (req, res) => {
     try {
         await nodeFunctions.deleteMovie(req.body.ID_Movie);
-        res.send({ success: "successful"});
+        res.send({ success: "successful" });
     } catch (err) {
         console.log(err);
         res.send({ success: "error" });
@@ -218,40 +209,21 @@ app.post('/addNewChoice', async (req, res) => {
 app.delete('/deleteChoice', async (req, res) => {
     try {
         await nodeFunctions.deleteChoice(req.body.ID_Choice);
-        res.send({ success: "successful"});
+        res.send({ success: "successful" });
     } catch (err) {
         console.log(err);
         res.send({ success: "error" });
     }
 });
 
-
-// Elegir página a la cual va el usuario
-app.post('/userSelectNextOption', async (req, res) => {
-    // En cada caso, primero hago llamada a la base de datos para los datos que necesite.;
-    try {
-        switch(req.body.userSelectNextOptionName) {
-            case "makeBooking":
-                const cinemas = await nodeFunctions.selectAllCinemas();
-                res.render('selectCinemaAndMovie', { user: req.session.user, cinemas: cinemas });
-                break;
-            case "payBooking":
-                // const bookings = await nodeFunctions.selectAll("Bookings");
-                res.render('home', null);
-                break;
-            case "modifyBooking":
-                // const bookings = await nodeFunctions.selectAll("Bookings");
-                res.render('home', null);
-                break;
-        }
-    } catch (err) {
-        console.log(err);
-        res.render('homeAdmin', { user: req.session.user, error: "Ocurrió un error. Inténtelo nuevamente." });
-    }
-})
+// Ir a la pantalla de seleccion de cine y pelicula
+app.get('/selectCinemaAndMovie', async (req, res) => {
+    const cinemas = await nodeFunctions.selectAllCinemas();
+    res.render('selectCinemaAndMovie', { user: req.session.user, cinemas: cinemas });
+});
 
 // Volver a home.handlebars
-app.post('/returnHome', (req, res) => res.render('home', { user: req.session.user }));
+app.get('/returnHome', (req, res) => res.render('home', { user: req.session.user }));
 
 // Actualizar lista de películas por cine
 app.get('/getMoviesForThisCinema', async (req, res) => {
@@ -275,13 +247,45 @@ app.get('/getSchedule', async (req, res) => {
     }
 })
 
-app.post("/continueToSelectSeats", async (req, res) => {
+// Ir a la pantalla de selección de asientos
+app.post('/continueToSelectSeats', async (req, res) => {
     try {
-        const selectedCinema = (await nodeFunctions.selectAllOfSelectedChoice(req.body.id_cinema, req.body.id_movie, req.body.movie_schedule))[0];
-        selectedCinema.matrix_of_seats = JSON.parse(selectedCinema.matrix_of_seats);
-        res.render("selectSeats", selectedCinema);
+        req.session.selectedChoice = await nodeFunctions.selectToContinuesSelectSeats(req.body.id_cinema, req.body.id_movie, req.body.movie_schedule);
+        // Primero verificamos que el usuario no haya adquirido ya asientos para esta función
+        const boolAlreadyExistingBooking = await nodeFunctions.alreadyBookingWithThisChoice(req.session.user.ID_User, req.session.selectedChoice.ID_Choice);
+        
+        if (boolAlreadyExistingBooking) {
+            const cinemas = await nodeFunctions.selectAllCinemas();
+            res.render('selectCinemaAndMovie', { cinemas: cinemas, error: "Su usuario ya creó una reserva sobre esta opción. No puede elegir dos veces la misma opción de reserva." })
+        } else {
+            res.render("selectSeats", { user: req.session.user, selectedChoice: req.session.selectedChoice });
+        }
     } catch (err) {
         console.log(err);
-        res.send(null);
+        const cinemas = await nodeFunctions.selectAllCinemas();
+        res.render('selectCinemaAndMovie', { cinemas: cinemas, error: "Ocurrió un error. Inténtelo nuevamente." });
     }
+});
+
+// Asignar asientos
+app.post('/assignSeats', async (req, res) => {
+    try {
+        const ID_User = req.session.user.ID_User;
+        const ID_Choice = req.session.selectedChoice.ID_Choice;
+        const price = 100 * req.body.length;
+        req.session.seats = req.body;
+
+        // Por un lado tengo que cambiar la matriz de asientos, y por otro agregar la reserva
+        await nodeFunctions.createBooking(ID_User, ID_Choice, req.session.seats, price);
+        res.send({ success: "successful" });
+    } catch(err) {
+        console.log(err);
+        res.send({ success: "error" });
+    }
+});
+
+app.get('/continueToBookingConfirmation', async (req, res) => {
+    console.log(req.session);
+    // const booking = await nodeFunctions.selectCreatedBooking(req.session.user.ID_User, req.session.selectedChoice.ID_Choice);
+    res.render("bookingConfirmation", { user: req.session.user, selectedChoice: req.session.selectedChoice });
 });

@@ -1,28 +1,25 @@
 {{> navbar this}}
 <div class="mt-3 container-sm">
+    <h1>Bienvenido, {{user.real_name}} {{user.surname}}.</h1>
     <div class="container-sm bg-light mb-3 p-3 border">
         <div class="mb-3 form-group">
             <h3>Seleccione la opción que quiere utilizar.</h3>
         </div>
         {{#if error}}
-            <div class="mb-3 form-group">
-                <h3>{{error}}</h3>
-            </div>
+        <div class="mb-3 form-group">
+            <h3>{{error}}</h3>
+        </div>
         {{/if}}
-        <div class="mb-3 mt-5 form-group">
-            <form action="/userSelectNextOption" method="POST" id="userSelectNextOptionID">
-                <div class="row text-center">
-                    <div class="col-sm-4 mx-auto">
-                        <button type="submit" class="btn btn-success btn-lg" name="userSelectNextOptionName" value="makeBooking">Hacer una reserva</button>
-                    </div>
-                    <div class="col-sm-4 mx-auto">
-                        <button type="submit" class="btn btn-success btn-lg" name="userSelectNextOptionName" value="payBooking">Pagar una reserva</button>
-                    </div>
-                    <div class="col-sm-4 mx-auto">
-                        <button type="submit" class="btn btn-success btn-lg" name="userSelectNextOptionName" value="modifyBooking">Modificar una reserva</button>
-                    </div>
-                </div>
-            </form>
+        <div class="mb-3 mt-5 form-group row text-center">
+            <div class="col-sm-4 mx-auto">
+                <a class="btn btn-success btn-lg" href="/selectCinemaAndMovie">Hacer una reserva</a>
+            </div>
+            <div class="col-sm-4 mx-auto">
+                <a class="btn btn-success btn-lg" href="">Pagar una reserva</a>
+            </div>
+            <div class="col-sm-4 mx-auto">
+                <a class="btn btn-success btn-lg" href="">Modificar una reserva</a>
+            </div>
         </div>
     </div>
 </div>

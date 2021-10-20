@@ -8,25 +8,20 @@
             <h3>Seleccione la opción que quiere utilizar.</h3>
         </div>
         {{#if error}}
-            <div class="mb-3 form-group">
-                <h3>{{error}}</h3>
-            </div>
+        <div class="mb-3 form-group">
+            <h3>{{error}}</h3>
+        </div>
         {{/if}}
-        <div class="mb-3 mt-5 form-group">
-            <form action="/adminChangesSelector" method="GET" id="adminChangesSelectorID">
-                <div class="row text-center">
-                    <div class="col-sm-4 mx-auto">
-                        <button type="submit" class="btn btn-success btn-lg" name="adminChangesSelectorName" value="Cinemas">Modificar cines</button>
-                    </div>
-                    <div class="col-sm-4 mx-auto">
-                        <button type="submit" class="btn btn-success btn-lg" name="adminChangesSelectorName" value="Movies">Modificar películas</button>
-                    </div>
-                    <div class="col-sm-4 mx-auto">
-                        <button type="submit" class="btn btn-success btn-lg" name="adminChangesSelectorName" value="Choices">Modificar horarios</button>
-                    </div>
-                </div>
-            </form>
+        <div class="row mb-3 mt-5 form-group text-center">
+            <div class="col-sm-4 mx-auto">
+                <a class="btn btn-success btn-lg" href="/adminChangesCinemas">Modificar cines</a>
+            </div>
+            <div class="col-sm-4 mx-auto">
+                <a class="btn btn-success btn-lg" href="/adminChangesMovies">Modificar películas</a>
+            </div>
+            <div class="col-sm-4 mx-auto">
+                <a class="btn btn-success btn-lg" href="/adminChangesChoices">Modificar horarios</a>
+            </div>
         </div>
     </div>
 </div>
-

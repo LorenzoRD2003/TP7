@@ -1,0 +1,24 @@
+{{> navbar this}}
+<h2>Confirmación de reserva y pago de entradas</h2>
+<div class="container-sm bg-light mb-3 p-3 border">
+    <div class="mb-3 form-group">
+        <h3>Opciones seleccionadas</h3>
+        <ul data-booking-id="{{booking.ID_Booking}}">
+            <li>Cine: {{booking.cinema_name}} - {{booking.address}} - {{booking.city}}</li>
+            <li>Película: {{booking.movie_name}} - {{booking.director}} - {{booking.movie_language}} - {{booking.duration}} minutos</li>
+            <li>Horario: {{booking.movie_schedule}}</li>
+        </ul>
+    </div>
+    <div class="mb-3 form-group">
+        <h3>Asientos - Precio: {{booking.price}}</h3>
+        <ul>
+        {{#each booking.seats}}
+            <li>Fila: {{this.row}}   Columna: {{this.column}}</li>
+        {{/each}}
+        </ul>
+    </div>
+    <div class="form-check">
+        <button type="button" class="btn btn-secondary btn-lg" onclick="bookOrPay(false)">Reservar</button>
+        <button type="button" class="btn btn-primary btn-lg" onclick="bookOrPay(true)">Pagar</button>
+    </div>
+</div>

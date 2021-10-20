@@ -1,5 +1,5 @@
 // Para ahorrar en escritura
-const getValueByID = (elem) => $(`#${elem}`).val();
+const getValueByID = (elemID) => $(`#${elemID}`).val();
 const getSelectedOption = (selectElemID) => {
     const selectElem = document.getElementById(selectElemID);
     const selectedIndex = selectElem.selectedIndex;

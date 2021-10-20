@@ -3,7 +3,7 @@ const createModal = (id, title, text, buttonText, buttonCallback) => {
     const modalContainer = document.getElementById('modalContainer');
 
     modalContainer.innerHTML = `
-    <div class="modal fade" id="${id}" tabindex="-1" aria-labelledby="${id}Label" aria-hidden="true"> <div class="modal-dialog">
+    <div class="modal fade" id="${id}" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog">    
             <div class="modal-content">
                 <div class="modal-header">
@@ -18,8 +18,9 @@ const createModal = (id, title, text, buttonText, buttonCallback) => {
             </div>
         </div>
     </div>`;
-    
+
     document.getElementById(`${id}Button`).onclick = buttonCallback;
+    $(`#${id}`).modal({ backdrop: 'static', keyboard: false });
     $(`#${id}`).modal("show");
 };
 
@@ -41,19 +42,19 @@ const createAccount = () => {
             surname: surname,
             dni: parseInt(dni),
             email: email,
-            password: password 
+            password: password
         };
-    
+
         // Me muestra un modal al volver
         ajax("POST", "/createAccount", newUser, (res) => {
             res = JSON.parse(res);
-            switch(res.success) {
+            switch (res.success) {
                 case "successful":
                     createModal("createAccountModal",
-                                "¡Felicidades!",
-                                "Su usuario fue creado satisfactoriamente.",
-                                "Volver al Inicio",
-                                () => $("#returnLoginForm").submit());
+                        "¡Felicidades!",
+                        "Su usuario fue creado satisfactoriamente.",
+                        "Volver al Inicio",
+                        () => $("#returnLoginForm").submit());
                     break;
                 case "alreadyExisting":
                     createErrorModal("alreadyExistingAccountModal", "Ya existe una cuenta con este email. Por favor, intente crearla con otro email, o acceda a la cuenta ya creada.");
@@ -71,7 +72,7 @@ const createAccount = () => {
 const updateCinemasList = (cinemasList) => {
     ajax("GET", "/updateCinemasList", null, (res) => {
         if (res) {
-            res = JSON.parse(res); 
+            res = JSON.parse(res);
             cinemasList.innerHTML = "<option disabled selected>Seleccione un cine</option>";
             res.cinemasList.forEach(cinema => {
                 let option = document.createElement("option");
@@ -133,7 +134,7 @@ const addNewCinema = () => {
 
     ajax("POST", "/addNewCinema", newCinema, (res) => {
         res = JSON.parse(res);
-        switch(res.success) {
+        switch (res.success) {
             case "successful":
                 createSuccessModal("addNewCinemaModal", "El cine fue creado satisfactoriamente.");
                 break;
@@ -155,7 +156,7 @@ const addNewMovie = () => {
 
     ajax("POST", "/addNewMovie", newMovie, (res) => {
         res = JSON.parse(res);
-        switch(res.success) {
+        switch (res.success) {
             case "successful":
                 const selectMoviesList = document.getElementById("adminChangesMoviesListID");
                 updateMoviesList(selectMoviesList);
@@ -176,7 +177,7 @@ const deleteMovie = () => {
 
     ajax("DELETE", "/deleteMovie", movieToDelete, (res) => {
         res = JSON.parse(res);
-        switch(res.success) {
+        switch (res.success) {
             case "successful":
                 const selectMoviesList = document.getElementById("adminChangesMoviesListID");
                 updateMoviesList(selectMoviesList);
@@ -199,7 +200,7 @@ const addNewChoice = () => {
 
     ajax("POST", "/addNewChoice", newChoice, (res) => {
         res = JSON.parse(res);
-        switch(res.success) {
+        switch (res.success) {
             case "successful":
                 const selectChoicesList = document.getElementById("adminChangesChoicesListID");
                 createSuccessModal("addNewMovieModal", "La opción de reserva fue creada satisfactoriamente.");
@@ -217,10 +218,10 @@ const deleteChoice = () => {
     const choiceToDelete = {
         ID_Choice: getDatasetOfOption("adminChangesChoicesListID").choiceId
     }
-    
+
     ajax("DELETE", "/deleteChoice", choiceToDelete, (res) => {
         res = JSON.parse(res);
-        switch(res.success) {
+        switch (res.success) {
             case "successful":
                 const selectChoicesList = document.getElementById("adminChangesChoicesListID");
                 updateChoicesList(selectChoicesList);
@@ -239,15 +240,15 @@ const getMoviesForThisCinema = () => {
     const cinemaChosen = {
         ID_Cinema: getDatasetOfOption("selectCinemaAndMovieCinemasListID").cinemaId
     }
-    
+
     const moviesList = document.getElementById("selectCinemaAndMovieMoviesListID");
     moviesList.innerHTML = "<option disabled selected>Seleccione una película</option>";
-    
+
     const schedulesList = document.getElementById("selectCinemaAndMovieScheduleID");
     schedulesList.innerHTML = "<option disabled selected>Seleccione un horario</option>";
     schedulesList.disabled = true;
     disableButton("selectCinemaAndMovieContinueButtonID");
-    
+
     ajax("GET", "/getMoviesForThisCinema", cinemaChosen, (res) => {
         if (res) {
             res = JSON.parse(res);
@@ -279,7 +280,7 @@ const getSchedule = () => {
     const schedulesList = document.getElementById("selectCinemaAndMovieScheduleID");
     schedulesList.innerHTML = "<option disabled selected>Seleccione un horario</option>";
     disableButton("selectCinemaAndMovieContinueButtonID");
-    
+
     ajax("GET", "/getSchedule", object, (res) => {
         if (res) {
             res = JSON.parse(res);
@@ -302,3 +303,63 @@ const continueToSelectSeat = () => {
     selectedOption.value = getDatasetOfOption("selectCinemaAndMovieMoviesListID").movieId;
     document.getElementById("continueToSelectSeatFormID").submit();
 }
+
+// Clicks de asientos
+let chosen_seats;
+const startEventSeats = () => {
+    chosen_seats = 0;
+    const allSeats = document.getElementsByClassName("btn-seat");
+    for (let seat of allSeats) {
+        seat.setAttribute("data-row-number", seat.parentNode.dataset.rowNumber);
+        seat.addEventListener("click", () => {
+            switch (seat.textContent) {
+                case "E":
+                    if (chosen_seats < 6) {
+                        seat.classList.remove("btn-success");
+                        seat.classList.add("btn-primary");
+                        seat.textContent = "S";
+                        chosen_seats++;
+                    } else {
+                        createErrorModal("errorTooManySelectedSeatsModal", "Puede elegir un máximo de seis asientos.");
+                    }
+                    break;
+                case "S":
+                    seat.classList.remove("btn-primary");
+                    seat.classList.add("btn-success");
+                    seat.textContent = "E";
+                    chosen_seats--;
+                    break;
+                case "NE":
+                    createErrorModal("errorAlreadySelectedModal", "Este asiento ya fue elegido por alguien con anterioridad. Por favor, elija otro.");
+            }
+            const continueButton = document.getElementById("assignSeatsButtonID");
+            (chosen_seats == 0) ? continueButton.disabled = true : continueButton.disabled = false;
+        });
+    }
+}
+
+// Continuar luego de elegir los asientos
+const assignSeats = () => {
+    const selectedSeats = document.getElementsByClassName("btn-primary btn-seat");
+    let seatsIndexArray = [];
+    for (let seat of selectedSeats) {
+        seatsIndexArray.push({ "row": seat.dataset.rowNumber, "column": seat.dataset.columnNumber })
+    }
+    ajax("POST", "/assignSeats", seatsIndexArray, (res) => {
+        res = JSON.parse(res);
+        switch (res.success) {
+            case "successful":
+                createModal("createAccountModal",
+                    "¡Felicidades!",
+                    "Los asientos fueron asignados a su reserva satisfactoriamente.",
+                    "Continuar",
+                    () => $("#continueToBookingConfirmationFormID").submit()
+                );
+                break;
+            case "error":
+                createErrorModal("errorCreateAccountModal", "Hubo un error en la creación de su usuario. Intentelo nuevamente más tarde.");
+                break;
+        }
+    });
+}
+

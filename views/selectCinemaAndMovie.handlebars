@@ -1,6 +1,11 @@
 {{> navbar this}}
 <div class="mt-5 mb-3 container-sm">
     <h2>Zona de selección de cine y película.</h2>
+    {{#if error}}
+    <div class="mb-3 form-group">
+        <h3>{{error}}</h3>
+    </div>
+    {{/if}}
 </div>
 <div class="container-sm bg-light mb-3 p-3 border">
     <form id="continueToSelectSeatFormID" action="/continueToSelectSeats" method="POST">
@@ -34,7 +39,7 @@
             </select>
         </div>
         <div class="mb-3 form-check">
-            <button type="button" id="selectCinemaAndMovieContinueButtonID" class="btn btn-success"
+            <button type="button" id="selectCinemaAndMovieContinueButtonID" class="btn btn-success btn-lg"
                 onclick="continueToSelectSeat()" disabled>Continuar</button>
         </div>
     </form>
