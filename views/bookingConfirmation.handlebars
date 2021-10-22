@@ -1,24 +1,48 @@
 {{> navbar this}}
-<h2>Confirmación de reserva y pago de entradas</h2>
-<div class="container-sm bg-light mb-3 p-3 border">
+
+<div class="container">
+    <h2>Confirmación de reserva y pago de entradas</h2>
+    {{#if error}}
     <div class="mb-3 form-group">
-        <h3>Opciones seleccionadas</h3>
-        <ul data-booking-id="{{booking.ID_Booking}}">
-            <li>Cine: {{booking.cinema_name}} - {{booking.address}} - {{booking.city}}</li>
-            <li>Película: {{booking.movie_name}} - {{booking.director}} - {{booking.movie_language}} - {{booking.duration}} minutos</li>
-            <li>Horario: {{booking.movie_schedule}}</li>
-        </ul>
+        <h3>{{error}}</h3>
     </div>
-    <div class="mb-3 form-group">
-        <h3>Asientos - Precio: {{booking.price}}</h3>
-        <ul>
-        {{#each booking.seats}}
-            <li>Fila: {{this.row}}   Columna: {{this.column}}</li>
-        {{/each}}
-        </ul>
-    </div>
-    <div class="form-check">
-        <button type="button" class="btn btn-secondary btn-lg" onclick="bookOrPay(false)">Reservar</button>
-        <button type="button" class="btn btn-primary btn-lg" onclick="bookOrPay(true)">Pagar</button>
+    {{/if}}
+    <div class="container-sm bg-light mb-3 p-3 border">
+        <div class="mb-3 form-group">
+            <h3>Opciones seleccionadas</h3>
+            <ul>
+                <li>Cine: {{selectedChoice.cinema_name}} - {{selectedChoice.address}} - {{selectedChoice.city}}</li>
+                <li>Película: {{selectedChoice.movie_name}} - {{selectedChoice.director}} -
+                    {{selectedChoice.movie_language}} - {{selectedChoice.duration}} minutos</li>
+                <li>Horario: {{selectedChoice.movie_schedule}}</li>
+            </ul>
+        </div>
+        <div class="mb-3 form-group">
+            <h3>Asientos</h3>
+            <ul>
+                {{#each seats.listOfSeats}}
+                <li>Fila: {{this.row}} Columna: {{this.column}}</li>
+                {{/each}}
+            </ul>
+        </div>
+        <div class="mb-3 form-group">
+        <h3>Precio: {{seats.price}}</h3>
+        </div>
+        <div class="mb-3 form-group">
+            <form id="confirmBookingFormID" action="/confirmBooking" method="POST">
+                <h3>Elegir si reservar o pagar</h3>
+                <div class="form-check">
+                    <label class="form-check-label" for="radioButtonBookID">Reservar</label>
+                    <input class="form-check-input" type="radio" name="bookOrPay" value="book" id="radioButtonBookID" checked>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label" for="radioButtonPayID">Pagar</label>
+                    <input class="form-check-input" type="radio" name="bookOrPay" value="pay" id="radioButtonPayID">
+                </div>
+                <div class="form-check">
+                    <button type="button" class="btn btn-lg btn-success" onclick="bookOrPayF()">Confirmar</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

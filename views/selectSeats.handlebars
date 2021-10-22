@@ -17,11 +17,11 @@
         {{#each selectedChoice.matrix_of_seats}}
         <div data-row-number="{{@index}}" class="text-center">
             {{#each this}}
-            {{#if this.isEmpty}}
-            <button data-column-number="{{@index}}" class="btn btn-success btn-seat m-1">E</button>
-            {{else}}
-            <button data-column-number="{{@index}}" class="btn btn-danger btn-seat m-1">NE</button>
-            {{/if}}
+                {{#if this.isEmpty}}
+                    <button data-column-number="{{@index}}" class="btn btn-success btn-seat m-1">E</button>
+                {{else}}
+                    <button data-column-number="{{@index}}" class="btn btn-danger btn-seat m-1">NE</button>
+                {{/if}}
             {{/each}}
         </div>
         {{/each}}

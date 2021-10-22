@@ -1,0 +1,126 @@
+{{> navbar this}}
+
+<body>
+    <div class="mt-5 mb-3 container-sm">
+        <h2>Sección para modificar y pagar reservas.</h2>
+    </div>
+
+    <div class="container-sm bg-light mb-3 p-3 border">
+        <div class="mb-3 form-group">
+            <h3>Lista de reservas</h3>
+        </div>
+        <div class="mb-3 form-group">
+            <table class="table">
+                <thead>
+                    <tr class="text-center">
+                        <th>Número de reserva</th>
+                        <th>Cine</th>
+                        <th>Película</th>
+                        <th>Horario</th>
+                        <th>Asientos</th>
+                        <th>Precio</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each notPaidBookings}}
+                    <tr class="text-center">
+                        <td>{{this.ID_Booking}}</td>
+                        <td>
+                            {{this.cinema_name}} <br>
+                            {{this.address}} <br>
+                            {{this.city}}
+                        </td>
+                        <td>
+                            {{this.movie_name}} <br>
+                            {{this.director}} <br>
+                            {{this.movie_language}} <br>
+                            {{this.duration}} minutos <br>
+                        </td>
+                        <td>{{this.movie_schedule}}</td>
+                        <td>
+                            <ul>
+                                {{#each seats}}
+                                <li data-row="{{this.row}}" data-column="{{this.column}}">Fila: {{this.row}} Columna:
+                                    {{this.column}}</li>
+                                {{/each}}
+                            </ul>
+                        </td>
+                        <td>{{this.price}}</td>
+                        <td>
+                            <div class="mb-3">
+                                <button class="btn btn-primary btn-sm" onclick="payThisBooking(this)">Pagar
+                                    reserva</button>
+                            </div>
+                            <div class="dropdown mb-3">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownModifyBooking"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Modificar reserva
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownModifyBooking">
+                                    <li><a class="dropdown-item" href="#">Modificar cine</a></li>
+                                    <li><a class="dropdown-item" href="#">Modificar horario</a></li>
+                                    <li><a class="dropdown-item" href="/changeSeats">Cambiar butacas</a></li>
+                                </ul>
+                            </div>
+                            <div class="mb-3">
+                                <button class="btn btn-danger btn-sm" onclick="deleteThisBooking(this)">Eliminar
+                                    reserva</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="container-sm bg-light mb-3 p-3 border">
+        <div class="mb-3 form-group">
+            <h3>Lista de compras de entradas</h3>
+        </div>
+        <div class="mb-3 form-group">
+            <table class="table">
+                <thead>
+                    <tr class="text-center">
+                        <th>Número de reserva</th>
+                        <th>Cine</th>
+                        <th>Película</th>
+                        <th>Horario</th>
+                        <th>Asientos</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody id="paidBookingsTable">
+                    {{#each paidBookings}}
+                    <tr class="text-center">
+                        <td>{{this.ID_Booking}}</td>
+                        <td>
+                            {{this.cinema_name}} <br>
+                            {{this.address}} <br>
+                            {{this.city}}
+                        </td>
+                        <td>
+                            {{this.movie_name}} <br>
+                            {{this.director}} <br>
+                            {{this.movie_language}} <br>
+                            {{this.duration}} minutos <br>
+                        </td>
+                        <td>{{this.movie_schedule}}</td>
+                        <td>
+                            <ul>
+                                {{#each seats}}
+                                <li>Fila: {{this.row}} Columna: {{this.column}}</li>
+                                {{/each}}
+                            </ul>
+                        </td>
+                        <td>{{this.price}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+{{> returnHome this}}

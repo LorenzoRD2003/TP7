@@ -2,6 +2,7 @@
 <div class="mt-5 mb-3 container-sm">
     <h2>Zona de modificaciones de películas.</h2>
 </div>
+
 <div class="container-sm bg-light mb-3 p-3 border">
     <div class="mb-3 form-group">
         <h3>Agregar una película</h3>
@@ -35,7 +36,8 @@
         <select class="form-select" id="adminChangesMoviesListID">
             <option disabled selected>Seleccione una película</option>
             {{#each movies}}
-                <option data-movie-id="{{this.ID_Movie}}">{{this.movie_name}} - {{this.director}}</option>
+            <option data-movie-id="{{this.ID_Movie}}">{{this.movie_name}} - {{this.director}} -
+                {{this.movie_language}} - {{this.duration}} minutos</option>
             {{/each}}
         </select>
     </div>

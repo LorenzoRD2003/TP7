@@ -1,5 +1,5 @@
 // Crear un modal y mostrarlo en la pantalla
-const createModal = (id, title, text, buttonText, buttonCallback) => {
+const createModal = (id, title, text, buttonText, buttonCallback, secondButtonText=undefined, secondButtonCallback=undefined) => {
     const modalContainer = document.getElementById('modalContainer');
 
     modalContainer.innerHTML = `
@@ -12,7 +12,7 @@ const createModal = (id, title, text, buttonText, buttonCallback) => {
                 <div class="modal-body">
                     ${text}
                 </div>
-                <div class="modal-footer">
+                <div id="${id}Footer" class="modal-footer">
                     <button id="${id}Button" type="button" class="btn btn-primary" data-bs-dismiss="modal">${buttonText}</button>
                 </div>
             </div>
@@ -20,6 +20,13 @@ const createModal = (id, title, text, buttonText, buttonCallback) => {
     </div>`;
 
     document.getElementById(`${id}Button`).onclick = buttonCallback;
+    if (secondButtonText) {
+        document.getElementById(`${id}Footer`).innerHTML += `
+        <button id="${id}Button2" type="button" class="btn btn-danger" data-bs-dismiss="modal">${secondButtonText}</button>`;
+        document.getElementById(`${id}Button`).onclick = buttonCallback;
+        document.getElementById(`${id}Button2`).onclick = secondButtonCallback;
+    }
+    
     $(`#${id}`).modal({ backdrop: 'static', keyboard: false });
     $(`#${id}`).modal("show");
 };
@@ -66,7 +73,6 @@ const createAccount = () => {
         });
     }
 }
-
 
 // Actualizar lista de cines
 const updateCinemasList = (cinemasList) => {
@@ -234,7 +240,6 @@ const deleteChoice = () => {
     });
 }
 
-
 // Actualizar lista de peliculas por cine en la pantalla de selección
 const getMoviesForThisCinema = () => {
     const cinemaChosen = {
@@ -349,7 +354,7 @@ const assignSeats = () => {
         res = JSON.parse(res);
         switch (res.success) {
             case "successful":
-                createModal("createAccountModal",
+                createModal("assignSeatsModal",
                     "¡Felicidades!",
                     "Los asientos fueron asignados a su reserva satisfactoriamente.",
                     "Continuar",
@@ -357,9 +362,72 @@ const assignSeats = () => {
                 );
                 break;
             case "error":
-                createErrorModal("errorCreateAccountModal", "Hubo un error en la creación de su usuario. Intentelo nuevamente más tarde.");
+                createErrorModal("errorAssignSeatstModal", "Hubo un error en la creación de su usuario. Intentelo nuevamente más tarde.");
                 break;
         }
     });
 }
 
+// Aparece el modal respecto de si reservar o pagar
+const bookOrPayF = () => {
+    const bool = document.getElementById("radioButtonBookID").checked;
+    const modalText = (bool) ? "realizar una reserva" : "pagar en este momento";
+    createModal("confirmBookingModalID",
+        "¡Advertencia!",
+        `¿Está seguro de que quiere ${modalText}?`,
+        "Confirmar", () => $("#confirmBookingFormID").submit(),
+        "Cancelar", () => $(`#confirmBookingModalID`).modal("hide")
+    );
+}
+
+// Borrar una reserva
+const deleteThisBooking = (elem) => {
+    const tableRow = elem.parentNode.parentNode.parentNode;
+    const ID_Booking = parseInt(tableRow.childNodes[1].textContent);
+    const liCollection = tableRow.childNodes[9].childNodes[1].getElementsByTagName("li");
+    let seats = [];
+    for (let li of liCollection) {
+        let seat = {
+            row: parseInt(li.dataset.row),
+            column: parseInt(li.dataset.column)
+        }
+        seats.push(seat);
+    }
+    const object = {
+        ID_Booking: ID_Booking,
+        seats: seats
+    }
+    ajax("DELETE", "/deleteBooking", object, (res) => {
+        res = JSON.parse(res);
+        switch (res.success) {
+            case "successful":
+                createSuccessModal("deleteBookingModal", "La reserva fue eliminada satisfactoriamente.");
+                tableRow.remove();
+                break;
+            case "error":
+                createErrorModal("errorDeleteBookingModal", "Hubo un error al intentar eliminar la reserva. Inténtelo nuevamente más tarde.");
+                break;
+        }
+    });
+}
+
+// Pagar una reserva
+const payThisBooking = (elem) => {
+    const tableRow = elem.parentNode.parentNode.parentNode;
+    const object = { ID_Booking: parseInt(tableRow.childNodes[1].textContent) }
+    ajax("PUT", "/payBooking", object, (res) => {
+        res = JSON.parse(res);
+        switch (res.success) {
+            case "successful":
+                createSuccessModal("payBookingModal", "La reserva fue pagada satisfactoriamente.");
+                const newRow = document.getElementById("paidBookingsTable").insertRow();
+                newRow.innerHTML = tableRow.innerHTML;
+                document.getElementById("paidBookingsTable").childNodes[1].childNodes[13].remove();
+                tableRow.remove();
+                break;
+            case "error":
+                createErrorModal("errorPayBookingModal", "Hubo un error al intentar pagar la reserva. Inténtelo nuevamente más tarde.");
+                break;
+        }
+    });
+}

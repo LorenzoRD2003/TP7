@@ -218,8 +218,13 @@ app.delete('/deleteChoice', async (req, res) => {
 
 // Ir a la pantalla de seleccion de cine y pelicula
 app.get('/selectCinemaAndMovie', async (req, res) => {
-    const cinemas = await nodeFunctions.selectAllCinemas();
-    res.render('selectCinemaAndMovie', { user: req.session.user, cinemas: cinemas });
+    try {
+        const cinemas = await nodeFunctions.selectAllCinemas();
+        res.render('selectCinemaAndMovie', { user: req.session.user, cinemas: cinemas });
+    } catch (err) {
+        console.log(err);
+        res.render('home', { user: req.session.user, error: "Ocurrió un error. Inténtelo nuevamente." });
+    }
 });
 
 // Volver a home.handlebars
@@ -251,15 +256,7 @@ app.get('/getSchedule', async (req, res) => {
 app.post('/continueToSelectSeats', async (req, res) => {
     try {
         req.session.selectedChoice = await nodeFunctions.selectToContinuesSelectSeats(req.body.id_cinema, req.body.id_movie, req.body.movie_schedule);
-        // Primero verificamos que el usuario no haya adquirido ya asientos para esta función
-        const boolAlreadyExistingBooking = await nodeFunctions.alreadyBookingWithThisChoice(req.session.user.ID_User, req.session.selectedChoice.ID_Choice);
-        
-        if (boolAlreadyExistingBooking) {
-            const cinemas = await nodeFunctions.selectAllCinemas();
-            res.render('selectCinemaAndMovie', { cinemas: cinemas, error: "Su usuario ya creó una reserva sobre esta opción. No puede elegir dos veces la misma opción de reserva." })
-        } else {
-            res.render("selectSeats", { user: req.session.user, selectedChoice: req.session.selectedChoice });
-        }
+        res.render("selectSeats", { user: req.session.user, selectedChoice: req.session.selectedChoice });
     } catch (err) {
         console.log(err);
         const cinemas = await nodeFunctions.selectAllCinemas();
@@ -270,13 +267,7 @@ app.post('/continueToSelectSeats', async (req, res) => {
 // Asignar asientos
 app.post('/assignSeats', async (req, res) => {
     try {
-        const ID_User = req.session.user.ID_User;
-        const ID_Choice = req.session.selectedChoice.ID_Choice;
-        const price = 100 * req.body.length;
-        req.session.seats = req.body;
-
-        // Por un lado tengo que cambiar la matriz de asientos, y por otro agregar la reserva
-        await nodeFunctions.createBooking(ID_User, ID_Choice, req.session.seats, price);
+        req.session.seats = { listOfSeats: req.body, price: 100 * req.body.length };
         res.send({ success: "successful" });
     } catch(err) {
         console.log(err);
@@ -285,7 +276,70 @@ app.post('/assignSeats', async (req, res) => {
 });
 
 app.get('/continueToBookingConfirmation', async (req, res) => {
-    console.log(req.session);
-    // const booking = await nodeFunctions.selectCreatedBooking(req.session.user.ID_User, req.session.selectedChoice.ID_Choice);
-    res.render("bookingConfirmation", { user: req.session.user, selectedChoice: req.session.selectedChoice });
+    res.render("bookingConfirmation", {
+        user: req.session.user,
+        selectedChoice: req.session.selectedChoice, 
+        seats: req.session.seats
+    });
+});
+
+app.post('/confirmBooking', async (req, res) => {
+    try {
+        const ID_User = req.session.user.ID_User;
+        const ID_Choice = req.session.selectedChoice.ID_Choice;
+        const seats = req.session.seats.listOfSeats;
+        const price = req.session.seats.price;
+        const was_paid = (req.body.bookOrPay == "book") ? false : true;
+        
+        // Por un lado tengo que cambiar la matriz de asientos, y por otro agregar la reserva
+        await nodeFunctions.modifyMatrixOfSeats(ID_User, ID_Choice, seats);
+        await nodeFunctions.createBooking(ID_User, ID_Choice, seats, price, was_paid);
+        delete req.session.selectedChoice, req.session.seats;
+        res.render('home', { user: req.session.user });
+    } catch (err) {
+        console.log(err);
+        res.render("bookingConfirmation", {
+            user: req.session.user,
+            selectedChoice: req.session.selectedChoice,
+            seats: req.session.seats,
+            error: "Ocurrió un error. Inténtelo nuevamente."
+        });
+    }
+});
+
+app.get('/modifyBookings', async (req, res) => {
+    try {
+        const allBookings = await nodeFunctions.selectAllBookings(req.session.user.ID_User);
+        // Tengo que dividirlas en pagadas y no pagadas
+        const paidBookings = [], notPaidBookings = [];
+        allBookings.forEach(booking => (booking.was_paid) ? paidBookings.push(booking) : notPaidBookings.push(booking));
+        res.render('modifyBookings', {
+            user: req.session.user,
+            paidBookings: paidBookings,
+            notPaidBookings: notPaidBookings
+        });
+    } catch (err) {
+        console.log(err);
+        res.render('home', { user: req.session.user, error: "Ocurrió un error. Inténtelo nuevamente." });
+    }
+});
+
+app.delete('/deleteBooking', async (req, res) => {
+    try {
+        await nodeFunctions.deleteBooking(req.body.ID_Booking, req.body.seats);
+        res.send({ success: "successful" });
+    } catch(err) {
+        console.log(err);
+        res.send({ success: "error" });
+    }
+});
+
+app.put('/payBooking', async (req, res) => {
+    try {
+        await nodeFunctions.payBooking(req.body.ID_Booking);
+        res.send({ success: "successful" });
+    } catch(err) {
+        console.log(err);
+        res.send({ success: "error" });
+    }
 });

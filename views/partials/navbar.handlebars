@@ -2,7 +2,7 @@
     <div class="container">
         <h2>Venta de entradas de LorenzoRD</h2>
         <form action="/gotoAccount" method="POST" id="formGotoAccountID">
-            <button type="submit" id="gotoAccountButtonID" class="disabled btn btn-primary mx-auto">Mi Cuenta</button>
+            <button type="submit" id="gotoAccountButtonID" class="disabled btn btn-primary mx-auto">{{user.real_name}}</button>
         </form>
         <form action="/logout" method="POST" id="formLogoutID">
             <button type="submit" id="logoutButtonID" class="btn btn-primary mx-auto">Cerrar Sesión</button>
