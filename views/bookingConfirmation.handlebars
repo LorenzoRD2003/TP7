@@ -20,13 +20,13 @@
         <div class="mb-3 form-group">
             <h3>Asientos</h3>
             <ul>
-                {{#each seats.listOfSeats}}
+                {{#each seats}}
                 <li>Fila: {{this.row}} Columna: {{this.column}}</li>
                 {{/each}}
             </ul>
         </div>
         <div class="mb-3 form-group">
-        <h3>Precio: {{seats.price}}</h3>
+        <h3>Precio: {{price}}</h3>
         </div>
         <div class="mb-3 form-group">
             <form id="confirmBookingFormID" action="/confirmBooking" method="POST">
@@ -46,3 +46,5 @@
         </div>
     </div>
 </div>
+
+{{> returnHome this}}

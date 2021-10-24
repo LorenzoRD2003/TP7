@@ -14,29 +14,55 @@
         </div>
         <div class="mb-3 form-group">
             <label for="selectCinemaAndMovieCinemasListID" class="form-label">Cine</label>
+            {{#if isModifying}}
+            <select name="id_cinema" class="form-select" id="selectCinemaAndMovieCinemasListID" onchange="getMoviesForThisCinema()" disabled>
+                <option data-cinema-id="{{cinema.ID_Cinema}}" value="{{cinema.ID_Cinema}}" disabled selected>
+                    {{cinema.cinema_name}} - {{cinema.address}} - {{cinema.city}}
+                </option>
+            </select>
+            {{else}}
             <select name="id_cinema" class="form-select" id="selectCinemaAndMovieCinemasListID" onchange="getMoviesForThisCinema()">
                 <option disabled selected>Seleccione un cine</option>
                 {{#each cinemas}}
-                <option data-cinema-id="{{this.ID_Cinema}}" value="{{this.ID_Cinema}}">{{this.cinema_name}} -
-                    {{this.address}} - {{this.city}}
+                <option data-cinema-id="{{this.ID_Cinema}}" value="{{this.ID_Cinema}}">
+                    {{this.cinema_name}} - {{this.address}} - {{this.city}}
                 </option>
                 {{/each}}
             </select>
+            {{/if}}
         </div>
         <div class="mb-3 form-group">
             <label for="selectCinemaAndMovieMoviesListID" class="form-label">Película</label>
+            {{#if isModifying}}
+            <select name="id_movie" class="form-select" id="selectCinemaAndMovieMoviesListID" onchange="getSchedule()" disabled>
+                <option data-movie-id="{{movie.ID_Movie}}" value="{{movie.ID_Movie}}" disabled selected>
+                    {{movie.movie_name}} - {{movie.director}} - {{movie.movie_language}} - {{movie.duration}} minutos
+                </option>
+            </select>
+            {{else}}
             <select name="id_movie" class="form-select" id="selectCinemaAndMovieMoviesListID" onchange="getSchedule()" disabled>
                 <option disabled selected>Seleccione una película</option>
                 <!-- Acá se van a introducir las películas en cuanto elijamos un cine -->
             </select>
+            {{/if}}
         </div>
         <div class="mb-3 form-group">
             <label for="selectCinemaAndMovieScheduleID" class="form-label">Horario</label>
+            {{#if isModifying}}
+            <select name="movie_schedule" class="form-select" id="selectCinemaAndMovieScheduleID"
+                onchange="enableButton('selectCinemaAndMovieContinueButtonID')">
+                <option disabled selected>Seleccione un horario</option>
+                {{#each schedulesList}}
+                <option>{{this.movie_schedule}}</option>
+                {{/each}}
+            </select>
+            {{else}}
             <select name="movie_schedule" class="form-select" id="selectCinemaAndMovieScheduleID"
                 onchange="enableButton('selectCinemaAndMovieContinueButtonID')" disabled>
                 <option disabled selected>Seleccione un horario</option>
                 <!-- Acá se van a introducir los horarios en cuanto elijamos una película -->
             </select>
+            {{/if}}
         </div>
         <div class="mb-3 form-check">
             <button type="button" id="selectCinemaAndMovieContinueButtonID" class="btn btn-success btn-lg"

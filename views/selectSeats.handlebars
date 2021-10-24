@@ -1,6 +1,9 @@
 {{> navbar this}}
 
 <body onload="startEventSeats()">
+    {{#if isModifying}}
+        <div id="isModifyingID"></div>
+    {{/if}}
     <div class="container-sm bg-light mb-3 p-3 border">
         <div class="mb-3 form-group">
             <h3>Opciones seleccionadas</h3>

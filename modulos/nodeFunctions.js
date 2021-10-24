@@ -109,7 +109,7 @@ exports.deleteChoice = async (ID_Choice) => {
 
 exports.selectMoviesByCinema = async (ID_Cinema) => {
     const moviesByCinema = await MySQL.realizarQuery(`
-        select distinct Movies.ID_Movie, Movies.movie_name, Movies.director, Movies.movie_language from Choices
+        select distinct Movies.ID_Movie, Movies.movie_name, Movies.director, Movies.movie_language, Movies.duration from Choices
         join Movies on (Movies.ID_Movie = Choices.ID_Movie)
         where Choices.ID_Cinema = ${ID_Cinema}
         order by Movies.movie_name, Movies.movie_language asc;
@@ -127,15 +127,14 @@ exports.selectScheduleOfChoice = async (ID_Cinema, ID_Movie) => {
 }
 
 exports.selectToContinuesSelectSeats = async (ID_Cinema, ID_Movie, movie_schedule) => {
-    const selectedChoice = await MySQL.realizarQuery(`
+    return (await MySQL.realizarQuery(`
         select Cinemas.cinema_name, Cinemas.address, Cinemas.city, 
                Movies.movie_name, Movies.director, Movies.movie_language, Movies.duration,
                Choices.ID_Choice, Choices.movie_schedule, Choices.matrix_of_seats from Choices
         join Cinemas on (Choices.ID_Cinema = Cinemas.ID_Cinema)  
         join Movies on (Movies.ID_Movie = Choices.ID_Movie)     
         where Choices.ID_Cinema = ${ID_Cinema} and Choices.ID_Movie = ${ID_Movie} and Choices.movie_schedule = '${movie_schedule}';
-    `);
-    return selectedChoice[0];
+    `))[0];
 }
 
 // Obtener matriz de asientos
@@ -155,20 +154,29 @@ const updateMatrixOfSeats = async (ID_Choice, matrixOfSeats) => {
     `);
 }
 
-// Modificar matriz de asientos
-exports.modifyMatrixOfSeats = async (ID_User, ID_Choice, seats) => {
+const addSeatsToMatrixOfSeats = async (ID_User, ID_Choice, seats) => {
     const matrixOfSeats = await selectMatrixOfSeats(ID_Choice);
     for (let seat of seats) {
         let foundSeat = matrixOfSeats[seat.row][seat.column];
         foundSeat.isEmpty = false;
-        foundSeat.user = ID_User;
+        foundSeat.userOwner = ID_User;
+    }
+    await updateMatrixOfSeats(ID_Choice, matrixOfSeats);
+}
+
+const deleteSeatsFromMatrixOfSeats = async (ID_Choice, seats) => {
+    const matrixOfSeats = await selectMatrixOfSeats(ID_Choice);
+    for (let seat of seats) {
+        let foundSeat = matrixOfSeats[seat.row][seat.column];
+        foundSeat.isEmpty = true;
+        foundSeat.userOwner = null;
     }
     await updateMatrixOfSeats(ID_Choice, matrixOfSeats);
 }
 
 // Asignar reserva de asientos a la base de datos
 exports.createBooking = async (ID_User, ID_Choice, seats, price, was_paid) => {
-    // Agregar la reserva
+    await addSeatsToMatrixOfSeats(ID_User, ID_Choice, seats);
     await MySQL.realizarQuery(`
         insert into Bookings(ID_User, ID_Choice, seats, price, was_paid)
         values (${ID_User}, ${ID_Choice}, '${JSON.stringify(seats)}', ${price}, ${was_paid});
@@ -191,23 +199,12 @@ exports.selectAllBookings = async (ID_User) => {
     return allBookings;
 }
 
-exports.deleteBooking = async (ID_Booking, seats) => {
-    // Obtengo la opcion de reserva a la cual correspone esta reserva
-    const ID_Choice = (await MySQL.realizarQuery(`
-        select ID_Choice from Bookings
+exports.deleteBooking = async (ID_Booking) => {
+    const { ID_Choice, seats } = (await MySQL.realizarQuery(`
+        select ID_Choice, seats from Bookings
         where ID_Booking = ${ID_Booking};
-    `))[0].ID_Choice;
-
-    // Vuelvo a poner los asientos de la matriz como libres
-    const matrixOfSeats = await selectMatrixOfSeats(ID_Choice);
-    for (let seat of seats) {
-        let foundSeat = matrixOfSeats[seat.row][seat.column];
-        foundSeat.isEmpty = true;
-        foundSeat.user = null;
-    }
-    await updateMatrixOfSeats(ID_Choice, matrixOfSeats);
-
-    // Borro la reserva
+    `))[0];
+    await deleteSeatsFromMatrixOfSeats(ID_Choice, seats);
     await MySQL.realizarQuery(`delete from Bookings where ID_Booking = ${ID_Booking}`);
 };
 
@@ -218,3 +215,44 @@ exports.payBooking = async (ID_Booking) => {
         where ID_Booking = ${ID_Booking};
     `);  
 }
+
+exports.selectThisBooking = async (ID_Booking) => {
+    return (await MySQL.realizarQuery(`
+    select Bookings.ID_Booking, Bookings.seats, Bookings.price, Bookings.was_paid,
+        Cinemas.ID_Cinema, Cinemas.cinema_name, Cinemas.address, Cinemas.city, 
+        Movies.ID_Movie, Movies.movie_name, Movies.director, Movies.movie_language, Movies.duration,
+        Choices.ID_Choice, Choices.movie_schedule from Bookings
+    join Choices on (Bookings.ID_Choice = Choices.ID_Choice)
+    join Cinemas on (Choices.ID_Cinema = Cinemas.ID_Cinema)
+    join Movies on (Movies.ID_Movie = Choices.ID_Movie)
+    where ID_Booking = ${ID_Booking};
+    `))[0];
+}
+
+// Modificar una reserva
+exports.modifyBooking = async (ID_Booking, ID_User, oldID_Choice, newID_Choice, oldSeats, newSeats, price, was_paid) => {
+    await deleteSeatsFromMatrixOfSeats(oldID_Choice, oldSeats);
+    await addSeatsToMatrixOfSeats(ID_User, newID_Choice, newSeats);
+    await MySQL.realizarQuery(`
+        update Bookings
+        set ID_Choice = ${newID_Choice}, seats = '${JSON.stringify(newSeats)}', price=${price}, was_paid=${was_paid}
+        where ID_Booking = ${ID_Booking};
+    `);
+}
+
+// Elegir cine por ID
+exports.selectCinemaByID = async (ID_Cinema) => {
+    return (await MySQL.realizarQuery(`
+        select * from Cinemas
+        where ID_Cinema = ${ID_Cinema};
+    `))[0];
+}
+
+// Elegir pelicula por ID
+exports.selectMovieByID = async (ID_Movie) => {
+    return (await MySQL.realizarQuery(`
+        select * from Movies
+        where ID_Movie = ${ID_Movie};
+    `))[0];
+}
+

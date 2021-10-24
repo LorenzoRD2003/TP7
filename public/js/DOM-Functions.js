@@ -1,39 +1,3 @@
-// Crear un modal y mostrarlo en la pantalla
-const createModal = (id, title, text, buttonText, buttonCallback, secondButtonText=undefined, secondButtonCallback=undefined) => {
-    const modalContainer = document.getElementById('modalContainer');
-
-    modalContainer.innerHTML = `
-    <div class="modal fade" id="${id}" data-keyboard="false" data-backdrop="static">
-        <div class="modal-dialog">    
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="${id}Label">${title}</h5>
-                </div>
-                <div class="modal-body">
-                    ${text}
-                </div>
-                <div id="${id}Footer" class="modal-footer">
-                    <button id="${id}Button" type="button" class="btn btn-primary" data-bs-dismiss="modal">${buttonText}</button>
-                </div>
-            </div>
-        </div>
-    </div>`;
-
-    document.getElementById(`${id}Button`).onclick = buttonCallback;
-    if (secondButtonText) {
-        document.getElementById(`${id}Footer`).innerHTML += `
-        <button id="${id}Button2" type="button" class="btn btn-danger" data-bs-dismiss="modal">${secondButtonText}</button>`;
-        document.getElementById(`${id}Button`).onclick = buttonCallback;
-        document.getElementById(`${id}Button2`).onclick = secondButtonCallback;
-    }
-    
-    $(`#${id}`).modal({ backdrop: 'static', keyboard: false });
-    $(`#${id}`).modal("show");
-};
-
-const createErrorModal = (id, errorMessage) => createModal(id, "¡Alerta!", errorMessage, "Cerrar", () => $(`#${id}`).modal("hide"));
-const createSuccessModal = (id, successMessage) => createModal(id, "¡Felicidades!", successMessage, "Cerrar", $(`#${id}`).modal("hide"));
-
 // Boton de crear cuenta
 const createAccount = () => {
     const name = getValueByID("createAccountNameID");
@@ -248,6 +212,7 @@ const getMoviesForThisCinema = () => {
 
     const moviesList = document.getElementById("selectCinemaAndMovieMoviesListID");
     moviesList.innerHTML = "<option disabled selected>Seleccione una película</option>";
+    moviesList.disabled = true;
 
     const schedulesList = document.getElementById("selectCinemaAndMovieScheduleID");
     schedulesList.innerHTML = "<option disabled selected>Seleccione un horario</option>";
@@ -260,13 +225,12 @@ const getMoviesForThisCinema = () => {
             if (res.moviesList.length) {
                 res.moviesList.forEach(movie => {
                     let option = document.createElement("option");
-                    option.text = `${movie.movie_name} - ${movie.director} - ${movie.movie_language}`;
+                    option.text = `${movie.movie_name} - ${movie.director} - ${movie.movie_language} - ${movie.duration} minutos`;
                     option.setAttribute('data-movie-id', movie.ID_Movie);
                     moviesList.appendChild(option);
                 });
                 moviesList.disabled = false;
             } else {
-                moviesList.disabled = true;
                 createErrorModal("errorUpdateCinemaAndMovieCinemasListModal", "No hay películas en este cine.");
             }
         } else {
@@ -284,6 +248,7 @@ const getSchedule = () => {
 
     const schedulesList = document.getElementById("selectCinemaAndMovieScheduleID");
     schedulesList.innerHTML = "<option disabled selected>Seleccione un horario</option>";
+    schedulesList.disabled = true;
     disableButton("selectCinemaAndMovieContinueButtonID");
 
     ajax("GET", "/getSchedule", object, (res) => {
@@ -293,7 +258,6 @@ const getSchedule = () => {
                 res.schedulesList.forEach(schedule => schedulesList.innerHTML += `<option>${schedule.movie_schedule}</option>`);
                 schedulesList.disabled = false;
             } else {
-                schedulesList.disabled = true;
                 createErrorModal("errorUpdateCinemaAndMovieSchedulesListModal", "No hay películas en este cine.");
             }
         } else {
@@ -304,13 +268,14 @@ const getSchedule = () => {
 
 // Continuar a la pantalla de selección de asientos
 const continueToSelectSeat = () => {
-    const selectedOption = getSelectedOption("selectCinemaAndMovieMoviesListID");
-    selectedOption.value = getDatasetOfOption("selectCinemaAndMovieMoviesListID").movieId;
+    const selectedMovieOption = getSelectedOption("selectCinemaAndMovieMoviesListID");
+    selectedMovieOption.value = getDatasetOfOption("selectCinemaAndMovieMoviesListID").movieId;
     document.getElementById("continueToSelectSeatFormID").submit();
 }
 
 // Clicks de asientos
 let chosen_seats;
+const MAX_SEATS = 6;
 const startEventSeats = () => {
     chosen_seats = 0;
     const allSeats = document.getElementsByClassName("btn-seat");
@@ -319,7 +284,7 @@ const startEventSeats = () => {
         seat.addEventListener("click", () => {
             switch (seat.textContent) {
                 case "E":
-                    if (chosen_seats < 6) {
+                    if (chosen_seats < MAX_SEATS) {
                         seat.classList.remove("btn-success");
                         seat.classList.add("btn-primary");
                         seat.textContent = "S";
@@ -339,6 +304,24 @@ const startEventSeats = () => {
             }
             const continueButton = document.getElementById("assignSeatsButtonID");
             (chosen_seats == 0) ? continueButton.disabled = true : continueButton.disabled = false;
+        });
+    }
+
+    // Si el usuario está modificando, actualizo los asientos que ya están seleccionados
+    if (document.getElementById("isModifyingID")) {
+        ajax("GET", "/getOldSeats", null, (res) => {
+            res = JSON.parse(res);
+            res.oldSeats.forEach(selectedSeat => {
+                for (let seat of allSeats) {
+                    if (selectedSeat.row == seat.dataset.rowNumber && selectedSeat.column == seat.dataset.columnNumber) {
+                        seat.classList.remove("btn-danger");
+                        seat.classList.add("btn-primary");
+                        seat.textContent = "S";
+                        chosen_seats++;
+                        break;
+                    }
+                }
+            });
         });
     }
 }
@@ -372,7 +355,8 @@ const assignSeats = () => {
 const bookOrPayF = () => {
     const bool = document.getElementById("radioButtonBookID").checked;
     const modalText = (bool) ? "realizar una reserva" : "pagar en este momento";
-    createModal("confirmBookingModalID",
+    createModal(
+        "confirmBookingModalID",
         "¡Advertencia!",
         `¿Está seguro de que quiere ${modalText}?`,
         "Confirmar", () => $("#confirmBookingFormID").submit(),
@@ -382,27 +366,13 @@ const bookOrPayF = () => {
 
 // Borrar una reserva
 const deleteThisBooking = (elem) => {
-    const tableRow = elem.parentNode.parentNode.parentNode;
-    const ID_Booking = parseInt(tableRow.childNodes[1].textContent);
-    const liCollection = tableRow.childNodes[9].childNodes[1].getElementsByTagName("li");
-    let seats = [];
-    for (let li of liCollection) {
-        let seat = {
-            row: parseInt(li.dataset.row),
-            column: parseInt(li.dataset.column)
-        }
-        seats.push(seat);
-    }
-    const object = {
-        ID_Booking: ID_Booking,
-        seats: seats
-    }
+    const object = { ID_Booking: getIDBookingFromTableRow(getTableRow(elem)) }
     ajax("DELETE", "/deleteBooking", object, (res) => {
         res = JSON.parse(res);
         switch (res.success) {
             case "successful":
                 createSuccessModal("deleteBookingModal", "La reserva fue eliminada satisfactoriamente.");
-                tableRow.remove();
+                getTableRow(elem).remove();
                 break;
             case "error":
                 createErrorModal("errorDeleteBookingModal", "Hubo un error al intentar eliminar la reserva. Inténtelo nuevamente más tarde.");
@@ -413,17 +383,13 @@ const deleteThisBooking = (elem) => {
 
 // Pagar una reserva
 const payThisBooking = (elem) => {
-    const tableRow = elem.parentNode.parentNode.parentNode;
-    const object = { ID_Booking: parseInt(tableRow.childNodes[1].textContent) }
+    const object = { ID_Booking: getIDBookingFromTableRow(getTableRow(elem)) }
     ajax("PUT", "/payBooking", object, (res) => {
         res = JSON.parse(res);
         switch (res.success) {
             case "successful":
                 createSuccessModal("payBookingModal", "La reserva fue pagada satisfactoriamente.");
-                const newRow = document.getElementById("paidBookingsTable").insertRow();
-                newRow.innerHTML = tableRow.innerHTML;
-                document.getElementById("paidBookingsTable").childNodes[1].childNodes[13].remove();
-                tableRow.remove();
+                changeTableWhenPayingBooking(getTableRow(elem), "paidBookingsTable");
                 break;
             case "error":
                 createErrorModal("errorPayBookingModal", "Hubo un error al intentar pagar la reserva. Inténtelo nuevamente más tarde.");
@@ -431,3 +397,29 @@ const payThisBooking = (elem) => {
         }
     });
 }
+
+// Modificar el cine
+const modifications = (elem, option) => {
+    const object = {
+        ID_Booking: getIDBookingFromTableRow(getTableRowFromDropdown(elem)),
+        modifications: option
+    }
+    ajax("PUT", "/modifications", object, (res) => {
+        res = JSON.parse(res);
+        switch (res.success) {
+            case "successful":
+                createModal(
+                    "modifyBookingModal",
+                    "¡Advertencia!",
+                    "¿Está seguro de que quiere realizar esta modificación?",
+                    "Confirmar", () => $("#modifyBookingForm").submit(),
+                    "Cancelar", () => $(`#modifyBookingModal`).modal("hide")
+                );
+                break;
+            case "error":
+                createErrorModal("errorModifyBookingModal", "Hubo un error al intentar modificar la reserva. Inténtelo nuevamente más tarde.");
+                break;
+        }
+    });
+}
+

@@ -58,9 +58,9 @@
                                     Modificar reserva
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownModifyBooking">
-                                    <li><a class="dropdown-item" href="#">Modificar cine</a></li>
-                                    <li><a class="dropdown-item" href="#">Modificar horario</a></li>
-                                    <li><a class="dropdown-item" href="/changeSeats">Cambiar butacas</a></li>
+                                    <li><button class="dropdown-item" onclick="modifications(this, 'cinema')">Modificar cine</button></li>
+                                    <li><button class="dropdown-item" onclick="modifications(this, 'schedule')">Modificar horario</button></li>
+                                    <li><button class="dropdown-item" onclick="modifications(this, 'seats')">Cambiar butacas</button></li>
                                 </ul>
                             </div>
                             <div class="mb-3">
@@ -73,6 +73,7 @@
                 </tbody>
             </table>
         </div>
+        <form action="/modifications/start" method="GET" id="modifyBookingForm"></form>
     </div>
 
     <div class="container-sm bg-light mb-3 p-3 border">
