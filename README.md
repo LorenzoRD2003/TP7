@@ -1,6 +1,6 @@
 ##### Venta de entradas de cine
 Es un simulador de venta de entradas de cine. Se pueden comprar entradas por cine, película y horario entre las disponibles.
-Se puede acceder aquí: [Venta de entradas de cine] (https://ventaentradascine.herokuapp.com/)
+Se puede acceder aquí: [Venta de entradas de cine](https://ventaentradascine.herokuapp.com/)
 
 ### ¿Qué puedo hacer?
 * Reservar y/o comprar entradas.
